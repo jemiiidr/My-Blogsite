@@ -13,7 +13,9 @@ import {
 	users,
 } from "@/lib/db/schema";
 
-export type PublishedPostCard = Awaited<ReturnType<typeof getPublishedPosts>>[number];
+export type PublishedPostCard = Awaited<
+	ReturnType<typeof getPublishedPosts>
+>[number];
 
 export async function getPostEngagement(postId: string) {
 	const [[likeCount], [viewCount], [shareCount]] = await Promise.all([
@@ -145,13 +147,15 @@ export async function getPostByIdForEditor(id: string) {
 	return row ?? null;
 }
 
-export async function getRelatedPosts(postId: string, categoryId: string | null) {
+export async function getRelatedPosts(
+	postId: string,
+	categoryId: string | null,
+) {
 	const all = await getPublishedPosts({ limit: 8 });
 	return all
 		.filter(
 			(item) =>
-				item.id !== postId &&
-				(!categoryId || item.category?.id === categoryId),
+				item.id !== postId && (!categoryId || item.category?.id === categoryId),
 		)
 		.slice(0, 3);
 }

@@ -3,24 +3,21 @@
 import { ReactLenis } from "lenis/react";
 
 export default function LenisProvider({
-    children,
+	children,
 }: {
-    children: React.ReactNode;
+	children: React.ReactNode;
 }) {
-
-return (
-    <ReactLenis
-        root
-        options={{
-        duration: 1.2,
-        smoothWheel: true,
-        wheelMultiplier: 1,
-        touchMultiplier: 2,
-        }}
-    >
-        {children}
-        
-    </ReactLenis>
-);
-
+	return (
+		<ReactLenis
+			root
+			options={{
+				duration: 1.2,
+				smoothWheel: true,
+				wheelMultiplier: 1,
+				touchMultiplier: 2,
+			}}
+		>
+			{children}
+		</ReactLenis>
+	);
 }

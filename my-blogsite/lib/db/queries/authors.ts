@@ -3,8 +3,8 @@ import "server-only";
 import { and, asc, eq, inArray } from "drizzle-orm";
 
 import { db } from "@/lib/db";
-import { users } from "@/lib/db/schema";
 import { getPublishedPosts } from "@/lib/db/queries/posts";
+import { users } from "@/lib/db/schema";
 
 export async function getAuthors() {
 	return db

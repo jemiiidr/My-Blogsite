@@ -3,11 +3,14 @@ import "server-only";
 import { desc, eq, inArray } from "drizzle-orm";
 
 import { db } from "@/lib/db";
-import { comments, postViews, posts, users } from "@/lib/db/schema";
 import { getAuthors } from "@/lib/db/queries/authors";
 import { getDashboardPosts } from "@/lib/db/queries/posts";
+import { comments, posts, postViews, users } from "@/lib/db/schema";
 
-export async function getDashboardAnalytics(user: { id: string; role: string }) {
+export async function getDashboardAnalytics(user: {
+	id: string;
+	role: string;
+}) {
 	const dashboardPosts = await getDashboardPosts(user);
 	const postIds = dashboardPosts.map((post) => post.id);
 
