@@ -19,7 +19,6 @@ export type AuthorActionState = {
 	fieldErrors?: Record<string, string[]>;
 };
 
-export const initialAuthorState: AuthorActionState = { success: false };
 
 export async function createAuthor(
 	_previousState: AuthorActionState,

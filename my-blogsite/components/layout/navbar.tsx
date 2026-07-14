@@ -33,13 +33,7 @@ export async function Navbar() {
 					) : null}
 				</nav>
 				<div className="flex items-center gap-2">
-					<Link
-						href="/blog"
-						aria-label="Search stories"
-						className="hidden size-10 place-items-center rounded-full border bg-surface transition hover:border-accent hover:text-accent sm:grid"
-					>
-						<SearchIcon className="size-4" />
-					</Link>
+	
 					<ThemeToggle />
 					{canWrite ? (
 						<Link

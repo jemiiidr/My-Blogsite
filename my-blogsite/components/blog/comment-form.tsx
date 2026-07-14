@@ -2,9 +2,13 @@
 
 import { useActionState, useEffect, useRef } from "react";
 
-import { addComment, initialCommentState } from "@/app/actions/comments";
+import { addComment, type CommentActionState } from "@/app/actions/comments";
 import { CommentSubmitButton } from "@/components/blog/comment-submit-button";
 import { FieldError } from "@/components/ui/field-error";
+
+const initialCommentState: CommentActionState = {
+	success: false,
+};
 
 export function CommentForm({
 	postId,

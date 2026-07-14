@@ -18,7 +18,6 @@ export type PostActionState = {
 	fieldErrors?: Record<string, string[]>;
 };
 
-export const initialPostState: PostActionState = { success: false };
 
 function parseTags(value: string) {
 	return Array.from(

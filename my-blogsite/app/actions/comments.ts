@@ -17,7 +17,6 @@ export type CommentActionState = {
 	};
 };
 
-export const initialCommentState: CommentActionState = { success: false };
 
 export async function addComment(
 	_previousState: CommentActionState,

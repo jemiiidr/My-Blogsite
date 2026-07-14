@@ -36,7 +36,7 @@ export function Footer() {
 				</div>
 			</div>
 			<div className="border-t px-4 py-6 text-center text-xs text-muted">
-				© {new Date().getFullYear()} LUCID. Academic project demonstration.
+				© JAEDROSA 2026.
 			</div>
 		</footer>
 	);

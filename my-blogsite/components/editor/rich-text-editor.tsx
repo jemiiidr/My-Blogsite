@@ -81,7 +81,7 @@ export function RichTextEditor({
 				dangerouslySetInnerHTML={{ __html: initialHtml }}
 				onInput={(event) => onChange(event.currentTarget.innerHTML)}
 				data-placeholder="Tell your story..."
-				className="min-h-[520px] px-6 py-8 text-[17px] leading-8 outline-none empty:before:pointer-events-none empty:before:text-muted empty:before:content-[attr(data-placeholder)] [&_a]:text-accent [&_a]:underline [&_blockquote]:my-6 [&_blockquote]:border-l-4 [&_blockquote]:border-accent [&_blockquote]:pl-5 [&_blockquote]:italic [&_h2]:mb-4 [&_h2]:mt-10 [&_h2]:text-3xl [&_h2]:font-semibold [&_h3]:mb-3 [&_h3]:mt-8 [&_h3]:text-2xl [&_h3]:font-semibold [&_ol]:my-5 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-4 [&_ul]:my-5 [&_ul]:list-disc [&_ul]:pl-6"
+				className="min-h-130 px-6 py-8 text-[17px] leading-8 outline-none empty:before:pointer-events-none empty:before:text-muted empty:before:content-[attr(data-placeholder)] [&_a]:text-accent [&_a]:underline [&_blockquote]:my-6 [&_blockquote]:border-l-4 [&_blockquote]:border-accent [&_blockquote]:pl-5 [&_blockquote]:italic [&_h2]:mb-4 [&_h2]:mt-10 [&_h2]:text-3xl [&_h2]:font-semibold [&_h3]:mb-3 [&_h3]:mt-8 [&_h3]:text-2xl [&_h3]:font-semibold [&_ol]:my-5 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-4 [&_ul]:my-5 [&_ul]:list-disc [&_ul]:pl-6"
 			/>
 		</div>
 	);

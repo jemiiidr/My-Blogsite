@@ -90,7 +90,7 @@ export async function getPublishedPosts(options?: {
 			? row.category?.slug.toLowerCase() === category
 			: true;
 		const matchesTag = tag
-			? row.tags.some((value) => value.toLowerCase() === tag)
+			? (row.tags ?? []).some((value) => value.toLowerCase() === tag)
 			: true;
 		return matchesSearch && matchesCategory && matchesTag;
 	});
