@@ -6,7 +6,13 @@ function run(command: string, value?: string) {
 	document.execCommand(command, false, value);
 }
 
-export function RichTextEditor({ initialHtml = "", onChange }: { initialHtml?: string; onChange: (html: string) => void }) {
+export function RichTextEditor({
+	initialHtml = "",
+	onChange,
+}: {
+	initialHtml?: string;
+	onChange: (html: string) => void;
+}) {
 	const editorRef = useRef<HTMLDivElement>(null);
 	const toolbar = [
 		{ label: "B", title: "Bold", command: "bold", className: "font-bold" },
@@ -22,11 +28,51 @@ export function RichTextEditor({ initialHtml = "", onChange }: { initialHtml?: s
 		<div className="overflow-hidden rounded-3xl border bg-surface shadow-sm">
 			<div className="flex flex-wrap items-center gap-1 border-b bg-surface-muted p-2">
 				{toolbar.map((item) => (
-					<button key={item.title} type="button" title={item.title} onMouseDown={(event) => { event.preventDefault(); run(item.command, item.value); editorRef.current?.focus(); }} className={`rounded-lg px-3 py-2 text-xs font-semibold transition hover:bg-surface hover:text-accent ${item.className ?? ""}`}>{item.label}</button>
+					<button
+						key={item.title}
+						type="button"
+						title={item.title}
+						onMouseDown={(event) => {
+							event.preventDefault();
+							run(item.command, item.value);
+							editorRef.current?.focus();
+						}}
+						className={`rounded-lg px-3 py-2 text-xs font-semibold transition hover:bg-surface hover:text-accent ${item.className ?? ""}`}
+					>
+						{item.label}
+					</button>
 				))}
-				<button type="button" onMouseDown={(event) => { event.preventDefault(); const href = window.prompt("Paste a complete link"); if (href) run("createLink", href); }} className="rounded-lg px-3 py-2 text-xs font-semibold transition hover:bg-surface hover:text-accent">Link</button>
-				<button type="button" onMouseDown={(event) => { event.preventDefault(); run("undo"); }} className="rounded-lg px-3 py-2 text-xs font-semibold transition hover:bg-surface hover:text-accent">Undo</button>
-				<button type="button" onMouseDown={(event) => { event.preventDefault(); run("redo"); }} className="rounded-lg px-3 py-2 text-xs font-semibold transition hover:bg-surface hover:text-accent">Redo</button>
+				<button
+					type="button"
+					onMouseDown={(event) => {
+						event.preventDefault();
+						const href = window.prompt("Paste a complete link");
+						if (href) run("createLink", href);
+					}}
+					className="rounded-lg px-3 py-2 text-xs font-semibold transition hover:bg-surface hover:text-accent"
+				>
+					Link
+				</button>
+				<button
+					type="button"
+					onMouseDown={(event) => {
+						event.preventDefault();
+						run("undo");
+					}}
+					className="rounded-lg px-3 py-2 text-xs font-semibold transition hover:bg-surface hover:text-accent"
+				>
+					Undo
+				</button>
+				<button
+					type="button"
+					onMouseDown={(event) => {
+						event.preventDefault();
+						run("redo");
+					}}
+					className="rounded-lg px-3 py-2 text-xs font-semibold transition hover:bg-surface hover:text-accent"
+				>
+					Redo
+				</button>
 			</div>
 			<div
 				ref={editorRef}

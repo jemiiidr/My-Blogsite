@@ -8,7 +8,6 @@ import { getCategories } from "@/lib/db/queries/categories";
 
 export const metadata: Metadata = { title: "Stories" };
 
-export const experimental_ppr = true;
 
 type SearchParams = Promise<{
 	search?: string;
