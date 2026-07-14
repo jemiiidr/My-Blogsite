@@ -38,7 +38,10 @@ function sanitizeAnchorAttributes(attributes: string) {
 export function sanitizeRichText(input: string) {
 	const withoutDangerousBlocks = input
 		.replace(/<!--[\s\S]*?-->/g, "")
-		.replace(/<(script|style|iframe|object|embed|form)[^>]*>[\s\S]*?<\/\1>/gi, "")
+		.replace(
+			/<(script|style|iframe|object|embed|form)[^>]*>[\s\S]*?<\/\1>/gi,
+			"",
+		)
 		.replace(/<(script|style|iframe|object|embed|form)[^>]*\/?\s*>/gi, "");
 
 	return withoutDangerousBlocks.replace(
@@ -50,7 +53,8 @@ export function sanitizeRichText(input: string) {
 			const isClosing = fullTag.startsWith("</");
 			if (isClosing) return `</${tagName}>`;
 			if (tagName === "br" || tagName === "hr") return `<${tagName}>`;
-			if (tagName === "a") return `<a${sanitizeAnchorAttributes(rawAttributes)}>`;
+			if (tagName === "a")
+				return `<a${sanitizeAnchorAttributes(rawAttributes)}>`;
 			return `<${tagName}>`;
 		},
 	);
