@@ -7,18 +7,17 @@ import { hashPassword } from "@/lib/auth/password";
 import { requireAdmin } from "@/lib/auth/permissions";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
+import { slugify } from "@/lib/utils/slugify";
 import {
 	authorStatusSchema,
 	createAuthorSchema,
 } from "@/lib/validations/author";
-import { slugify } from "@/lib/utils/slugify";
 
 export type AuthorActionState = {
 	success: boolean;
 	message?: string;
 	fieldErrors?: Record<string, string[]>;
 };
-
 
 export async function createAuthor(
 	_previousState: AuthorActionState,

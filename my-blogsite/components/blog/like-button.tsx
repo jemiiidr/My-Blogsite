@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useActionState } from "react";
 
-import { toggleLike, type LikeState } from "@/app/actions/engagement";
+import { type LikeState, toggleLike } from "@/app/actions/engagement";
 import { HeartIcon } from "@/components/ui/icons";
 
 export function LikeButton({

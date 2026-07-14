@@ -34,7 +34,6 @@ export function Avatar({
 
 	return (
 		<div
-			aria-label={`${name} profile picture placeholder`}
 			className={`grid shrink-0 place-items-center rounded-full border bg-accent-soft font-semibold text-accent ${className}`}
 			style={{ width: size, height: size }}
 		>

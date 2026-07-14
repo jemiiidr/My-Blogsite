@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 
-import { createAuthor, type AuthorActionState } from "@/app/actions/authors";
+import { type AuthorActionState, createAuthor } from "@/app/actions/authors";
 import { FieldError } from "@/components/ui/field-error";
 import { FormSubmitButton } from "@/components/ui/form-submit-button";
 

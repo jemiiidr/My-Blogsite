@@ -117,7 +117,7 @@ export function PostEditorForm({
 			</section>
 			<aside className="space-y-5 xl:sticky xl:top-24 xl:h-fit">
 				<div className="overflow-hidden rounded-3xl border bg-surface shadow-sm">
-					<div className="relative aspect-[16/10] bg-surface-muted">
+					<div className="relative aspect-16/10 bg-surface-muted">
 						<Image
 							src={cover || "/images/posts/story-gradient.svg"}
 							alt="Cover preview"

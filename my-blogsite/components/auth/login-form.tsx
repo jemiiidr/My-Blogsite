@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 
-import { login, type LoginState } from "@/app/actions/auth";
+import { type LoginState, login } from "@/app/actions/auth";
 import { FieldError } from "@/components/ui/field-error";
 import { FormSubmitButton } from "@/components/ui/form-submit-button";
 

@@ -6,7 +6,7 @@ import "./globals.css";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { LenisProvider } from "@/components/providers/lenis-provider";
-import { ThemeScript } from "@/components/providers/theme-script";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -42,17 +42,16 @@ export default function RootLayout({
 			suppressHydrationWarning
 			className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 		>
-			<head>
-				<ThemeScript />
-			</head>
 			<body>
-				<LenisProvider>
-					<Suspense fallback={<NavbarFallback />}>
-						<Navbar />
-					</Suspense>
-					<main className="min-h-[70vh]">{children}</main>
-					<Footer />
-				</LenisProvider>
+				<ThemeProvider>
+					<LenisProvider>
+						<Suspense fallback={<NavbarFallback />}>
+							<Navbar />
+						</Suspense>
+						<main className="min-h-[70vh]">{children}</main>
+						<Footer />
+					</LenisProvider>
+				</ThemeProvider>
 			</body>
 		</html>
 	);

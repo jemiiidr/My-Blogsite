@@ -17,7 +17,6 @@ export type CommentActionState = {
 	};
 };
 
-
 export async function addComment(
 	_previousState: CommentActionState,
 	formData: FormData,

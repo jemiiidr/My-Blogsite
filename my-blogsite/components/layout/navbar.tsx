@@ -1,8 +1,8 @@
 import Link from "next/link";
 
 import { logout } from "@/app/actions/auth";
-import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { MobileMenu } from "@/components/layout/mobile-menu";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { Avatar } from "@/components/ui/avatar";
 import { LogOutIcon, PenIcon, SearchIcon } from "@/components/ui/icons";
 import { Logo } from "@/components/ui/logo";
@@ -33,7 +33,6 @@ export async function Navbar() {
 					) : null}
 				</nav>
 				<div className="flex items-center gap-2">
-	
 					<ThemeToggle />
 					{canWrite ? (
 						<Link

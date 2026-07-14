@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:where(.dark, .dark *));
-
 :root {
 	--background: #f7f5f2;
 	--foreground: #18181b;
@@ -33,6 +31,7 @@
 	--color-muted: var(--muted);
 	--color-accent: var(--accent);
 	--color-accent-soft: var(--accent-soft);
+
 	--font-sans: var(--font-geist-sans);
 	--font-mono: var(--font-geist-mono);
 }
@@ -76,4 +75,27 @@ html.lenis body {
 
 .lenis.lenis-stopped {
 	overflow: hidden;
+}
+
+/* Circular light/dark mode reveal */
+
+::view-transition-old(root),
+::view-transition-new(root) {
+	animation: none;
+	mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+	z-index: 1;
+}
+
+::view-transition-new(root) {
+	z-index: 9999;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	::view-transition-old(root),
+	::view-transition-new(root) {
+		animation: none;
+	}
 }

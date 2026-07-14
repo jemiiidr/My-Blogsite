@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 
-import { updateProfile, type ProfileState } from "@/app/actions/profile";
+import { type ProfileState, updateProfile } from "@/app/actions/profile";
 import { FieldError } from "@/components/ui/field-error";
 import { FormSubmitButton } from "@/components/ui/form-submit-button";
 
