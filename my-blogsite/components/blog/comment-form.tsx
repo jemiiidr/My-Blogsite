@@ -2,10 +2,7 @@
 
 import { useActionState, useEffect, useRef } from "react";
 
-import {
-	addComment,
-	initialCommentState,
-} from "@/app/actions/comments";
+import { addComment, initialCommentState } from "@/app/actions/comments";
 import { CommentSubmitButton } from "@/components/blog/comment-submit-button";
 import { FieldError } from "@/components/ui/field-error";
 
@@ -34,7 +31,9 @@ export function CommentForm({
 			<input type="hidden" name="postId" value={postId} />
 			<input type="hidden" name="slug" value={slug} />
 			<div>
-				<label htmlFor="authorName" className="text-sm font-medium">Name</label>
+				<label htmlFor="authorName" className="text-sm font-medium">
+					Name
+				</label>
 				<input
 					id="authorName"
 					name="authorName"
@@ -46,7 +45,9 @@ export function CommentForm({
 				<FieldError errors={state.fieldErrors?.authorName} />
 			</div>
 			<div className="mt-5">
-				<label htmlFor="commentBody" className="text-sm font-medium">Comment</label>
+				<label htmlFor="commentBody" className="text-sm font-medium">
+					Comment
+				</label>
 				<textarea
 					id="commentBody"
 					name="body"
@@ -57,7 +58,10 @@ export function CommentForm({
 				<FieldError errors={state.fieldErrors?.body} />
 			</div>
 			<div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-				<p className={`text-sm ${state.success ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`} role="status">
+				<p
+					className={`text-sm ${state.success ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}
+					role="status"
+				>
 					{state.message}
 				</p>
 				<CommentSubmitButton />

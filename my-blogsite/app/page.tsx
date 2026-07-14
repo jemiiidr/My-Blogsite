@@ -10,7 +10,9 @@ function StoriesFallback() {
 		<div className="mx-auto max-w-7xl space-y-7 px-4 py-20 sm:px-6 lg:px-8">
 			<PostCardSkeleton featured />
 			<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-				{Array.from({ length: 3 }).map((_, index) => <PostCardSkeleton key={index} />)}
+				{Array.from({ length: 3 }).map((_, index) => (
+					<PostCardSkeleton key={index} />
+				))}
 			</div>
 		</div>
 	);
@@ -20,8 +22,16 @@ export default function HomePage() {
 	return (
 		<>
 			<HeroSection />
-			<Suspense fallback={<StoriesFallback />}><HomeStories /></Suspense>
-			<Suspense fallback={<div className="h-64 animate-pulse border-y bg-surface-muted" />}><CategoryStrip /></Suspense>
+			<Suspense fallback={<StoriesFallback />}>
+				<HomeStories />
+			</Suspense>
+			<Suspense
+				fallback={
+					<div className="h-64 animate-pulse border-y bg-surface-muted" />
+				}
+			>
+				<CategoryStrip />
+			</Suspense>
 		</>
 	);
 }

@@ -31,17 +31,25 @@ function NavbarFallback() {
 	return <div className="h-16 border-b bg-background" />;
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+	children,
+}: {
+	children: React.ReactNode;
+}) {
 	return (
 		<html
 			lang="en"
 			suppressHydrationWarning
 			className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 		>
-			<head><ThemeScript /></head>
+			<head>
+				<ThemeScript />
+			</head>
 			<body>
 				<LenisProvider>
-					<Suspense fallback={<NavbarFallback />}><Navbar /></Suspense>
+					<Suspense fallback={<NavbarFallback />}>
+						<Navbar />
+					</Suspense>
 					<main className="min-h-[70vh]">{children}</main>
 					<Footer />
 				</LenisProvider>

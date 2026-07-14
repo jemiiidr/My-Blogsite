@@ -17,11 +17,19 @@ export async function Navbar() {
 			<div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
 				<Logo />
 				<nav className="hidden items-center gap-7 text-sm font-medium md:flex">
-					<Link href="/" className="transition hover:text-accent">Home</Link>
-					<Link href="/blog" className="transition hover:text-accent">Blog</Link>
-					<Link href="/authors" className="transition hover:text-accent">Authors</Link>
+					<Link href="/" className="transition hover:text-accent">
+						Home
+					</Link>
+					<Link href="/blog" className="transition hover:text-accent">
+						Blog
+					</Link>
+					<Link href="/authors" className="transition hover:text-accent">
+						Authors
+					</Link>
 					{canWrite ? (
-						<Link href="/dashboard" className="transition hover:text-accent">Dashboard</Link>
+						<Link href="/dashboard" className="transition hover:text-accent">
+							Dashboard
+						</Link>
 					) : null}
 				</nav>
 				<div className="flex items-center gap-2">
@@ -64,7 +72,9 @@ export async function Navbar() {
 							Log in
 						</Link>
 					)}
-					<MobileMenu user={user ? { name: user.name, role: user.role } : null} />
+					<MobileMenu
+						user={user ? { name: user.name, role: user.role } : null}
+					/>
 				</div>
 			</div>
 		</header>

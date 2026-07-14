@@ -43,14 +43,22 @@ export function HeroSection() {
 				<Reveal delay={0.12} className="relative hidden min-h-[500px] lg:block">
 					<div className="absolute left-8 top-12 h-72 w-64 rotate-[-8deg] rounded-[2.5rem] border bg-gradient-to-br from-violet-300 via-fuchsia-200 to-cyan-200 p-6 shadow-2xl dark:from-violet-900 dark:via-fuchsia-950 dark:to-cyan-950">
 						<div className="h-full rounded-[1.8rem] border border-white/40 bg-white/35 p-5 backdrop-blur dark:bg-black/20">
-							<p className="text-xs font-semibold uppercase tracking-widest">Featured</p>
-							<p className="mt-24 text-3xl font-semibold leading-tight">Stories designed to make you pause.</p>
+							<p className="text-xs font-semibold uppercase tracking-widest">
+								Featured
+							</p>
+							<p className="mt-24 text-3xl font-semibold leading-tight">
+								Stories designed to make you pause.
+							</p>
 						</div>
 					</div>
 					<div className="absolute bottom-4 right-0 h-80 w-72 rotate-[6deg] rounded-[2.5rem] border bg-surface p-6 shadow-2xl">
 						<div className="h-40 rounded-[1.75rem] bg-gradient-to-br from-sky-300 via-violet-300 to-rose-300 dark:from-sky-900 dark:via-violet-900 dark:to-rose-900" />
-						<p className="mt-6 text-xs uppercase tracking-widest text-muted">Latest perspective</p>
-						<p className="mt-2 text-2xl font-semibold">Build a more curious reading habit.</p>
+						<p className="mt-6 text-xs uppercase tracking-widest text-muted">
+							Latest perspective
+						</p>
+						<p className="mt-2 text-2xl font-semibold">
+							Build a more curious reading habit.
+						</p>
 					</div>
 				</Reveal>
 			</div>

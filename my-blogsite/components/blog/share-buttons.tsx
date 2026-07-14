@@ -41,7 +41,11 @@ export function ShareButtons({
 			onClick={() => void share()}
 			className="inline-flex items-center gap-2 rounded-full border bg-surface px-4 py-2 text-sm font-semibold transition hover:-translate-y-0.5 hover:border-accent hover:text-accent"
 		>
-			{copied ? <CheckIcon className="size-4" /> : <ShareIcon className="size-4" />}
+			{copied ? (
+				<CheckIcon className="size-4" />
+			) : (
+				<ShareIcon className="size-4" />
+			)}
 			{copied ? "Copied" : "Share"}
 		</button>
 	);

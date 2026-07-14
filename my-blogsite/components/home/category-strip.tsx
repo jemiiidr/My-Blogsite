@@ -17,8 +17,12 @@ export async function CategoryStrip() {
 		<section className="border-y bg-surface py-16">
 			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 				<div className="mb-7 flex items-center justify-between">
-					<h2 className="text-2xl font-semibold tracking-tight">Explore by category</h2>
-					<Link href="/blog" className="text-sm font-medium text-accent">Browse all</Link>
+					<h2 className="text-2xl font-semibold tracking-tight">
+						Explore by category
+					</h2>
+					<Link href="/blog" className="text-sm font-medium text-accent">
+						Browse all
+					</Link>
 				</div>
 				<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
 					{categories.map((category, index) => (
@@ -30,7 +34,9 @@ export async function CategoryStrip() {
 							<div className="grid size-10 place-items-center rounded-xl border border-white/50 bg-white/40 font-semibold backdrop-blur dark:bg-black/20">
 								{String(index + 1).padStart(2, "0")}
 							</div>
-							<p className="mt-7 font-semibold group-hover:text-accent">{category.name}</p>
+							<p className="mt-7 font-semibold group-hover:text-accent">
+								{category.name}
+							</p>
 						</Link>
 					))}
 				</div>

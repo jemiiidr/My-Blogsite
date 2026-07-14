@@ -4,7 +4,13 @@ import { startTransition, useEffect } from "react";
 
 import { recordPostView } from "@/app/actions/engagement";
 
-export function ViewTracker({ postId, slug }: { postId: string; slug: string }) {
+export function ViewTracker({
+	postId,
+	slug,
+}: {
+	postId: string;
+	slug: string;
+}) {
 	useEffect(() => {
 		const key = `lucid-viewed:${postId}`;
 		if (sessionStorage.getItem(key)) return;

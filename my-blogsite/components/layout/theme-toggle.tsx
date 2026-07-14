@@ -28,7 +28,11 @@ export function ThemeToggle() {
 			aria-label="Toggle light and dark theme"
 			className="grid size-10 place-items-center rounded-full border bg-surface text-foreground transition hover:-translate-y-0.5 hover:border-accent hover:text-accent"
 		>
-			{mounted && isDark ? <SunIcon className="size-4" /> : <MoonIcon className="size-4" />}
+			{mounted && isDark ? (
+				<SunIcon className="size-4" />
+			) : (
+				<MoonIcon className="size-4" />
+			)}
 		</button>
 	);
 }

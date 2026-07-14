@@ -18,7 +18,10 @@ export async function CommentList({ postId }: { postId: string }) {
 	return (
 		<div className="space-y-4">
 			{comments.map((comment) => (
-				<article key={comment.id} className="rounded-[1.5rem] border bg-surface p-5">
+				<article
+					key={comment.id}
+					className="rounded-[1.5rem] border bg-surface p-5"
+				>
 					<div className="flex items-center gap-3">
 						<Avatar
 							name={comment.user?.name ?? comment.authorName}
@@ -27,16 +30,23 @@ export async function CommentList({ postId }: { postId: string }) {
 						/>
 						<div>
 							{comment.user?.slug ? (
-								<Link href={`/authors/${comment.user.slug}`} className="text-sm font-semibold hover:text-accent">
+								<Link
+									href={`/authors/${comment.user.slug}`}
+									className="text-sm font-semibold hover:text-accent"
+								>
 									{comment.user.name}
 								</Link>
 							) : (
 								<p className="text-sm font-semibold">{comment.authorName}</p>
 							)}
-							<p className="text-xs text-muted">{formatDate(comment.createdAt)}</p>
+							<p className="text-xs text-muted">
+								{formatDate(comment.createdAt)}
+							</p>
 						</div>
 					</div>
-					<p className="mt-4 whitespace-pre-wrap text-sm leading-7 text-muted">{comment.body}</p>
+					<p className="mt-4 whitespace-pre-wrap text-sm leading-7 text-muted">
+						{comment.body}
+					</p>
 				</article>
 			))}
 		</div>

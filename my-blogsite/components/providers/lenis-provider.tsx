@@ -2,19 +2,15 @@
 
 import { ReactLenis } from "lenis/react";
 
-export default function LenisProvider({
-	children,
-}: {
-	children: React.ReactNode;
-}) {
+export function LenisProvider({ children }: { children: React.ReactNode }) {
 	return (
 		<ReactLenis
 			root
 			options={{
-				duration: 1.2,
+				duration: 1.1,
 				smoothWheel: true,
 				wheelMultiplier: 1,
-				touchMultiplier: 2,
+				touchMultiplier: 1.5,
 			}}
 		>
 			{children}

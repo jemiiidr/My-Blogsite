@@ -16,9 +16,15 @@ export function Footer() {
 				<div>
 					<h2 className="font-semibold">Explore</h2>
 					<div className="mt-4 flex flex-col gap-3 text-sm text-muted">
-						<Link href="/blog" className="hover:text-accent">All stories</Link>
-						<Link href="/authors" className="hover:text-accent">Authors</Link>
-						<Link href="/login" className="hover:text-accent">Log in</Link>
+						<Link href="/blog" className="hover:text-accent">
+							All stories
+						</Link>
+						<Link href="/authors" className="hover:text-accent">
+							Authors
+						</Link>
+						<Link href="/login" className="hover:text-accent">
+							Log in
+						</Link>
 					</div>
 				</div>
 				<div>
