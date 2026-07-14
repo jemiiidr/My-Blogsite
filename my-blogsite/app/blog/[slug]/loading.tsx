@@ -5,7 +5,12 @@ export default function PostLoading() {
 			<div className="mx-auto mt-5 h-5 w-1/2 rounded bg-surface-muted" />
 			<div className="mt-10 aspect-16/8 rounded-4xl bg-surface-muted" />
 			<div className="mx-auto mt-12 max-w-3xl space-y-5">
-				{Array.from({ length: 8 }).map((_, index) => <div key={index} className={`h-4 rounded bg-surface-muted ${index % 3 === 0 ? "w-4/5" : "w-full"}`} />)}
+				{Array.from({ length: 8 }).map((_, index) => (
+					<div
+						key={index}
+						className={`h-4 rounded bg-surface-muted ${index % 3 === 0 ? "w-4/5" : "w-full"}`}
+					/>
+				))}
 			</div>
 		</div>
 	);

@@ -6,7 +6,9 @@ export default function BlogLoading() {
 			<div className="h-16 w-2/3 animate-pulse rounded-2xl bg-surface-muted" />
 			<div className="mt-8 h-20 animate-pulse rounded-3xl bg-surface-muted" />
 			<div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-				{Array.from({ length: 6 }).map((_, index) => <PostCardSkeleton key={index} />)}
+				{Array.from({ length: 6 }).map((_, index) => (
+					<PostCardSkeleton key={index} />
+				))}
 			</div>
 		</div>
 	);
