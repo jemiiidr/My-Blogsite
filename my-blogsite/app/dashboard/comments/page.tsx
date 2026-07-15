@@ -33,7 +33,7 @@ export default async function CommentsModerationPage() {
 										<div className="flex flex-wrap items-center gap-2">
 											<p className="font-semibold">{comment.authorName}</p>
 											<span
-												className={`rounded-full px-2 py-1 text-[10px] font-semibold ${comment.approved ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300" : "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300"}`}
+												className={`rounded-full px-2 py-1 text-[10px] font-semibold ${comment.approved ? "bg-success text-success-txt" : "bg-hidden text-hidden-txt"}`}
 											>
 												{comment.approved ? "Visible" : "Hidden"}
 											</span>

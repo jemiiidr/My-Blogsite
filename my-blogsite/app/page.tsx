@@ -6,12 +6,16 @@ import { HeroSection } from "@/components/home/hero-section";
 import { HomeStories } from "@/components/home/home-stories";
 
 function StoriesFallback() {
+	const skeletonKey = Array.from(
+		{ length: 3 },
+		(_, index) => `post-card-skeleton-${index + 1}`,
+	);
 	return (
 		<div className="mx-auto max-w-7xl space-y-7 px-4 py-20 sm:px-6 lg:px-8">
 			<PostCardSkeleton featured />
 			<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-				{Array.from({ length: 3 }).map((_, index) => (
-					<PostCardSkeleton key={index} />
+				{skeletonKey.map((skeletonId) => (
+					<PostCardSkeleton key={skeletonId} />
 				))}
 			</div>
 		</div>

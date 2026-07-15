@@ -13,7 +13,7 @@ export function ViewsChart({
 				</div>
 			</div>
 			{data.length ? (
-				<div className="flex h-52 items-end gap-2" aria-label="Views chart">
+				<div className="flex h-52 items-end gap-2">
 					{data.map((item) => (
 						<div
 							key={item.date}
@@ -23,7 +23,7 @@ export function ViewsChart({
 								{item.value}
 							</span>
 							<div
-								className="w-full rounded-t-xl bg-gradient-to-t from-accent to-fuchsia-300 transition group-hover:brightness-110"
+								className="w-full rounded-t-xl bg-linear-to-t from-accent to-fuchsia-300 transition group-hover:brightness-110"
 								style={{ height: `${Math.max((item.value / max) * 150, 8)}px` }}
 							/>
 							<span className="hidden text-[10px] text-muted sm:block">

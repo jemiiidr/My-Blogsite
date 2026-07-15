@@ -1,7 +1,10 @@
 "use server";
 
+import { randomUUID } from "node:crypto";
+
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 
 import { hashPassword } from "@/lib/auth/password";
 import { requireAdmin } from "@/lib/auth/permissions";
@@ -16,7 +19,7 @@ import {
 export type AuthorActionState = {
 	success: boolean;
 	message?: string;
-	fieldErrors?: Record<string, string[]>;
+	fieldErrors?: Record<string, string[] | undefined>;
 };
 
 export async function createAuthor(
@@ -24,6 +27,7 @@ export async function createAuthor(
 	formData: FormData,
 ): Promise<AuthorActionState> {
 	await requireAdmin();
+
 	const parsed = createAuthorSchema.safeParse({
 		name: formData.get("name"),
 		email: formData.get("email"),
@@ -35,24 +39,34 @@ export async function createAuthor(
 	if (!parsed.success) {
 		return {
 			success: false,
-			fieldErrors: parsed.error.flatten().fieldErrors,
+			fieldErrors: z.flattenError(parsed.error).fieldErrors,
 			message: "Please correct the author details.",
 		};
 	}
 
 	const email = parsed.data.email.toLowerCase();
-	const [existing] = await db
-		.select({ id: users.id })
+
+	const [existingUser] = await db
+		.select({
+			id: users.id,
+		})
 		.from(users)
 		.where(eq(users.email, email))
 		.limit(1);
 
-	if (existing) {
-		return { success: false, message: "An account already uses that email." };
+	if (existingUser) {
+		return {
+			success: false,
+			fieldErrors: {
+				email: ["An account already uses this email address."],
+			},
+			message: "The author account could not be created.",
+		};
 	}
 
 	const baseSlug = slugify(parsed.data.name) || "author";
-	const slug = `${baseSlug}-${Math.random().toString(36).slice(2, 6)}`;
+	const uniqueSuffix = randomUUID().slice(0, 8);
+	const slug = `${baseSlug}-${uniqueSuffix}`;
 
 	await db.insert(users).values({
 		name: parsed.data.name,
@@ -66,25 +80,61 @@ export async function createAuthor(
 
 	revalidatePath("/dashboard/authors");
 	revalidatePath("/authors");
-	return { success: true, message: "Author account created." };
+	revalidatePath("/dashboard", "layout");
+
+	return {
+		success: true,
+		message: "Author account created.",
+	};
 }
 
-export async function toggleAuthorStatus(formData: FormData) {
+export async function toggleAuthorStatus(formData: FormData): Promise<void> {
 	await requireAdmin();
+
 	const parsed = authorStatusSchema.safeParse({
 		userId: formData.get("userId"),
 		isActive: formData.get("isActive"),
 	});
-	if (!parsed.success) return;
+
+	if (!parsed.success) {
+		return;
+	}
+
+	const [targetUser] = await db
+		.select({
+			id: users.id,
+			role: users.role,
+			slug: users.slug,
+			isActive: users.isActive,
+		})
+		.from(users)
+		.where(eq(users.id, parsed.data.userId))
+		.limit(1);
+
+	if (!targetUser) {
+		return;
+	}
+
+	if (targetUser.role !== "author") {
+		return;
+	}
+
+	const nextStatus = parsed.data.isActive === "true";
+
+	if (targetUser.isActive === nextStatus) {
+		return;
+	}
 
 	await db
 		.update(users)
 		.set({
-			isActive: parsed.data.isActive === "true",
+			isActive: nextStatus,
 			updatedAt: new Date(),
 		})
-		.where(eq(users.id, parsed.data.userId));
+		.where(eq(users.id, targetUser.id));
 
 	revalidatePath("/dashboard/authors");
 	revalidatePath("/authors");
+	revalidatePath(`/authors/${targetUser.slug}`);
+	revalidatePath("/dashboard", "layout");
 }

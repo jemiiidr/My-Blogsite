@@ -31,7 +31,7 @@ export async function login(
 	}
 
 	const user = await getUserByEmail(parsed.data.email);
-	if (!user || !user.isActive) {
+	if (!user?.isActive) {
 		return { message: "Invalid email or password." };
 	}
 

@@ -6,7 +6,7 @@ const links = [
 	{ href: "/dashboard", label: "Overview" },
 	{ href: "/dashboard/analytics", label: "Analytics" },
 	{ href: "/dashboard/posts", label: "Posts" },
-	{ href: "/dashboard/posts/new", label: "Write a story" },
+	{ href: "/dashboard/posts/new", label: "Write a Post" },
 ];
 
 export function DashboardSidebar({
@@ -16,7 +16,7 @@ export function DashboardSidebar({
 }) {
 	return (
 		<aside className="rounded-3xl border bg-surface p-4 shadow-sm lg:sticky lg:top-24 lg:h-fit">
-			<div className="mb-4 rounded-2xl bg-gradient-to-br from-accent-soft to-surface-muted p-4">
+			<div className="mb-4 rounded-2xl bg-linear-to-br from-accent-soft to-surface-muted p-4">
 				<p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
 					Workspace
 				</p>
@@ -33,12 +33,16 @@ export function DashboardSidebar({
 						{link.label}
 					</Link>
 				))}
-				<Link
-					href="/dashboard/authors"
-					className="rounded-xl px-3 py-2.5 transition hover:bg-surface-muted hover:text-accent"
-				>
-					Authors
-				</Link>
+
+				{user.role === "admin" ? (
+					<Link
+						href="/dashboard/authors"
+						className="rounded-xl px-3 py-2.5 transition hover:bg-surface-muted hover:text-accent"
+					>
+						Authors
+					</Link>
+				) : null}
+
 				{user.role === "admin" ? (
 					<Link
 						href="/dashboard/comments"

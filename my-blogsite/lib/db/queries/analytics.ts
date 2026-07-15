@@ -35,7 +35,7 @@ export async function getDashboardAnalytics(user: {
 				.from(comments)
 				.where(inArray(comments.postId, postIds))
 				.orderBy(desc(comments.createdAt))
-				.limit(8)
+				.limit(4)
 		: [];
 
 	const viewMap = new Map<string, number>();

@@ -16,7 +16,7 @@ export async function PostGrid({
 
 	if (!posts.length) {
 		return (
-			<div className="rounded-[2rem] border border-dashed bg-surface px-6 py-20 text-center">
+			<div className="rounded-4xl border border-dashed bg-surface px-6 py-20 text-center">
 				<h2 className="text-xl font-semibold">No stories found</h2>
 				<p className="mt-2 text-sm text-muted">
 					Try a different search, category, or tag.

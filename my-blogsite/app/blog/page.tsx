@@ -8,6 +8,11 @@ import { getCategories } from "@/lib/db/queries/categories";
 
 export const metadata: Metadata = { title: "Stories" };
 
+const skeletonKey = Array.from(
+	{ length: 6 },
+	(_, index) => `skeleton-line-${index + 1}`,
+);
+
 type SearchParams = Promise<{
 	search?: string;
 	category?: string;
@@ -53,7 +58,10 @@ async function Filters({ searchParams }: { searchParams: SearchParams }) {
 					</option>
 				))}
 			</select>
-			<button className="h-12 rounded-xl bg-foreground px-6 text-sm font-semibold text-background">
+			<button
+				type="button"
+				className="h-12 rounded-xl bg-foreground px-6 text-sm font-semibold text-background"
+			>
 				Apply filters
 			</button>
 			{params.tag ? (
@@ -96,8 +104,8 @@ export default async function BlogPage({
 				<Suspense
 					fallback={
 						<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-							{Array.from({ length: 6 }).map((_, index) => (
-								<PostCardSkeleton key={index} />
+							{skeletonKey.map((skeletonId) => (
+								<PostCardSkeleton key={skeletonId} />
 							))}
 						</div>
 					}

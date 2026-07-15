@@ -31,9 +31,6 @@ export default async function EditPostPage({
 				<h1 className="mt-2 text-3xl font-semibold tracking-tight">
 					Edit story
 				</h1>
-				<p className="mt-2 text-muted">
-					Changes are validated and saved through a Server Action.
-				</p>
 			</div>
 			<PostEditorForm
 				action={action}

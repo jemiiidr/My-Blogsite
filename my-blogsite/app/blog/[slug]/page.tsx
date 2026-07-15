@@ -9,7 +9,6 @@ import { CommentList } from "@/components/blog/comment-list";
 import { LikeButton } from "@/components/blog/like-button";
 import { PostCard } from "@/components/blog/post-card";
 import { PostContent } from "@/components/blog/post-content";
-import { ShareButtons } from "@/components/blog/share-buttons";
 import { ViewTracker } from "@/components/blog/view-tracker";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -130,11 +129,11 @@ export default async function PostPage({ params }: PostPageProps) {
 								slug={post.slug}
 								initialLiked={initialLiked}
 							/>
-							<ShareButtons
+							{/* <ShareButtons
 								postId={post.id}
 								slug={post.slug}
 								title={post.title}
-							/>
+							/> */}
 						</div>
 					</div>
 					<PostContent html={post.body} />

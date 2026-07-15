@@ -29,7 +29,7 @@ export async function CategoryStrip() {
 						<Link
 							key={category.id}
 							href={`/blog?category=${category.slug}`}
-							className={`group min-h-36 rounded-[1.5rem] border bg-gradient-to-br p-5 transition hover:-translate-y-1 ${gradients[index % gradients.length]}`}
+							className={`group min-h-36 rounded-3xl border bg-linear-to-br p-5 transition hover:-translate-y-1 ${gradients[index % gradients.length]}`}
 						>
 							<div className="grid size-10 place-items-center rounded-xl border border-white/50 bg-white/40 font-semibold backdrop-blur dark:bg-black/20">
 								{String(index + 1).padStart(2, "0")}

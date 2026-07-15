@@ -15,7 +15,7 @@ import { postSchema, updatePostSchema } from "@/lib/validations/post";
 export type PostActionState = {
 	success: boolean;
 	message?: string;
-	fieldErrors?: Record<string, string[]>;
+	fieldErrors?: Record<string, string[] | undefined>;
 };
 
 function parseTags(value: string) {
@@ -32,6 +32,19 @@ function parseTags(value: string) {
 function canPublish(publishPassword: string) {
 	const expected = process.env.EDITOR_PASSWORD;
 	return Boolean(expected && publishPassword === expected);
+}
+
+function revalidatePostPages(...slugs: string[]) {
+	revalidatePath("/");
+	revalidatePath("/blog");
+
+	revalidatePath("/authors/[slug]", "page");
+
+	revalidatePath("/dashboard", "layout");
+
+	for (const slug of new Set(slugs.filter(Boolean))) {
+		revalidatePath(`/blog/${slug}`);
+	}
 }
 
 export async function createPost(
@@ -54,7 +67,7 @@ export async function createPost(
 	if (!parsed.success) {
 		return {
 			success: false,
-			fieldErrors: parsed.error.flatten().fieldErrors,
+			fieldErrors: z.flattenError(parsed.error).fieldErrors,
 			message: "Please complete the required article fields.",
 		};
 	}
@@ -71,8 +84,15 @@ export async function createPost(
 	}
 
 	const slug = slugify(parsed.data.slug || parsed.data.title);
-	if (!slug)
-		return { success: false, message: "Could not create a valid slug." };
+	if (!slug) {
+		return {
+			success: false,
+			fieldErrors: {
+				slug: ["Could not generate a valid slug from the provided value."],
+			},
+			message: "Enter a valid title or URL slug.",
+		};
+	}
 
 	const [existing] = await db
 		.select({ id: posts.id })
@@ -102,9 +122,8 @@ export async function createPost(
 		})
 		.returning({ slug: posts.slug });
 
-	revalidatePath("/blog");
-	revalidatePath("/");
-	revalidatePath("/dashboard");
+	revalidatePostPages(created.slug);
+
 	redirect(
 		parsed.data.intent === "published"
 			? `/blog/${created.slug}`
@@ -140,7 +159,12 @@ export async function updatePost(
 	}
 
 	const [existingPost] = await db
-		.select({ id: posts.id, authorId: posts.authorId, slug: posts.slug })
+		.select({
+			id: posts.id,
+			authorId: posts.authorId,
+			slug: posts.slug,
+			publishedAt: posts.publishedAt,
+		})
 		.from(posts)
 		.where(eq(posts.id, postId))
 		.limit(1);
@@ -183,15 +207,16 @@ export async function updatePost(
 			categoryId: parsed.data.categoryId,
 			tags: parseTags(parsed.data.tags),
 			status: parsed.data.intent,
-			publishedAt: parsed.data.intent === "published" ? new Date() : null,
+			publishedAt:
+				parsed.data.intent === "published"
+					? (existingPost.publishedAt ?? new Date())
+					: null,
 			updatedAt: new Date(),
 		})
 		.where(eq(posts.id, postId));
 
-	revalidatePath("/blog");
-	revalidatePath(`/blog/${existingPost.slug}`);
-	revalidatePath(`/blog/${slug}`);
-	revalidatePath("/dashboard");
+	revalidatePostPages(existingPost.slug, slug);
+
 	redirect(
 		parsed.data.intent === "published" ? `/blog/${slug}` : "/dashboard/posts",
 	);
@@ -212,7 +237,6 @@ export async function deletePost(formData: FormData) {
 	if (!post || (user.role !== "admin" && post.authorId !== user.id)) return;
 
 	await db.delete(posts).where(eq(posts.id, parsed.data.postId));
-	revalidatePath("/blog");
-	revalidatePath(`/blog/${post.slug}`);
-	revalidatePath("/dashboard");
+
+	revalidatePostPages(post.slug);
 }

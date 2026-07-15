@@ -56,7 +56,7 @@ export default async function ManageAuthorsPage() {
 										{author.role}
 									</span>
 									<span
-										className={`rounded-full px-2 py-1 text-[10px] font-semibold ${author.isActive ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300" : "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300"}`}
+										className={`rounded-full px-2 py-1 text-[10px] font-semibold ${author.isActive ? "bg-success text-success-txt" : "bg-fail text-fail-txt"}`}
 									>
 										{author.isActive ? "Active" : "Disabled"}
 									</span>
@@ -66,20 +66,32 @@ export default async function ManageAuthorsPage() {
 								</p>
 							</div>
 							{user.role === "admin" ? (
-								<form action={toggleAuthorStatus}>
-									<input type="hidden" name="userId" value={author.id} />
-									<input
-										type="hidden"
-										name="isActive"
-										value={author.isActive ? "false" : "true"}
-									/>
-									<button
-										type="submit"
-										className="rounded-full border px-4 py-2 text-sm font-semibold transition hover:border-accent hover:text-accent"
-									>
-										{author.isActive ? "Disable" : "Enable"}
-									</button>
-								</form>
+								author.role === "admin" ? (
+									<span className="rounded-full border border-accent/30 bg-accent-soft px-4 py-2 text-sm font-semibold text-accent">
+										Admin
+									</span>
+								) : (
+									<form action={toggleAuthorStatus}>
+										<input type="hidden" name="userId" value={author.id} />
+										<input
+											type="hidden"
+											name="isActive"
+											value={author.isActive ? "false" : "true"}
+										/>
+
+										<button
+											type="submit"
+											className={[
+												"rounded-full border px-4 py-2 text-sm font-semibold transition",
+												author.isActive
+													? "border-fail text-fail-txt hover:border-fail-txt hover:bg-fail"
+													: "border-success text-success-txt hover:border-success-txt hover:bg-success",
+											].join(" ")}
+										>
+											{author.isActive ? "Disable" : "Enable"}
+										</button>
+									</form>
+								)
 							) : null}
 						</div>
 					))}

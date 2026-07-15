@@ -21,7 +21,7 @@ export function RecentComments({
 							<div className="flex items-center justify-between gap-3">
 								<p className="text-sm font-semibold">{comment.authorName}</p>
 								<span
-									className={`rounded-full px-2 py-1 text-[10px] font-semibold ${comment.approved ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300" : "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300"}`}
+									className={`rounded-full px-2 py-1 text-[10px] font-semibold ${comment.approved ? "bg-success text-success-txt" : "bg-hidden text-hidden-txt"}`}
 								>
 									{comment.approved ? "Visible" : "Hidden"}
 								</span>

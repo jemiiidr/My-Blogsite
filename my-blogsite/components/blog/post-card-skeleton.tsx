@@ -4,7 +4,7 @@ export function PostCardSkeleton({ featured = false }: { featured?: boolean }) {
 			className={`overflow-hidden rounded-[1.75rem] border bg-surface ${featured ? "grid md:grid-cols-[1.2fr_1fr]" : ""}`}
 		>
 			<div
-				className={`${featured ? "min-h-72" : "aspect-[16/10]"} animate-pulse bg-surface-muted`}
+				className={`${featured ? "min-h-72" : "aspect-16/10"} animate-pulse bg-surface-muted`}
 			/>
 			<div className="space-y-4 p-6">
 				<div className="h-5 w-28 animate-pulse rounded-full bg-surface-muted" />

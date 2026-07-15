@@ -40,8 +40,8 @@ export function HeroSection() {
 						</Link>
 					</Reveal>
 				</div>
-				<Reveal delay={0.12} className="relative hidden min-h-[500px] lg:block">
-					<div className="absolute left-8 top-12 h-72 w-64 rotate-[-8deg] rounded-[2.5rem] border bg-gradient-to-br from-violet-300 via-fuchsia-200 to-cyan-200 p-6 shadow-2xl dark:from-violet-900 dark:via-fuchsia-950 dark:to-cyan-950">
+				<Reveal delay={0.12} className="relative hidden min-h-125 lg:block">
+					<div className="absolute left-8 top-12 h-72 w-64 rotate-[-8deg] rounded-[2.5rem] border bg-linear-to-br from-violet-300 via-fuchsia-200 to-cyan-200 p-6 shadow-2xl dark:from-violet-900 dark:via-fuchsia-950 dark:to-cyan-950">
 						<div className="h-full rounded-[1.8rem] border border-white/40 bg-white/35 p-5 backdrop-blur dark:bg-black/20">
 							<p className="text-xs font-semibold uppercase tracking-widest">
 								Featured
@@ -51,8 +51,8 @@ export function HeroSection() {
 							</p>
 						</div>
 					</div>
-					<div className="absolute bottom-4 right-0 h-80 w-72 rotate-[6deg] rounded-[2.5rem] border bg-surface p-6 shadow-2xl">
-						<div className="h-40 rounded-[1.75rem] bg-gradient-to-br from-sky-300 via-violet-300 to-rose-300 dark:from-sky-900 dark:via-violet-900 dark:to-rose-900" />
+					<div className="absolute bottom-4 right-0 h-80 w-72 rotate-6 rounded-[2.5rem] border bg-surface p-6 shadow-2xl">
+						<div className="h-40 rounded-[1.75rem] bg-linear-to-br from-sky-300 via-violet-300 to-rose-300 dark:from-sky-900 dark:via-violet-900 dark:to-rose-900" />
 						<p className="mt-6 text-xs uppercase tracking-widest text-muted">
 							Latest perspective
 						</p>

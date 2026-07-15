@@ -32,20 +32,12 @@ export default async function DashboardPage() {
 				</Link>
 			</div>
 			<div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-				<StatCard
-					label="Total views"
-					value={analytics.totals.views}
-					note="Unique readers recorded"
-				/>
+				<StatCard label="Total views" value={analytics.totals.views} />
 				<StatCard
 					label="Published stories"
 					value={analytics.totals.published}
 				/>
-				<StatCard
-					label="Likes"
-					value={analytics.totals.likes}
-					note="Registered readers only"
-				/>
+				<StatCard label="Likes" value={analytics.totals.likes} />
 				<StatCard label="Comments" value={analytics.totals.comments} />
 			</div>
 			<div className="grid gap-6 xl:grid-cols-[1.5fr_1fr]">
@@ -89,7 +81,9 @@ export default async function DashboardPage() {
 						))}
 					</div>
 				</div>
-				<RecentComments comments={analytics.recentComments} />
+				{user.role === "admin" ? (
+					<RecentComments comments={analytics.recentComments} />
+				) : null}
 			</div>
 		</div>
 	);

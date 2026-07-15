@@ -3,7 +3,7 @@ import "server-only";
 import { and, desc, eq } from "drizzle-orm";
 
 import { db } from "@/lib/db";
-import { comments, users } from "@/lib/db/schema";
+import { comments, posts, users } from "@/lib/db/schema";
 
 export async function getApprovedComments(postId: string) {
 	return db
@@ -26,7 +26,7 @@ export async function getApprovedComments(postId: string) {
 		.orderBy(desc(comments.createdAt));
 }
 
-export async function getRecentComments(limit = 10) {
+export async function getRecentComments(limit = 5) {
 	return db
 		.select({
 			id: comments.id,
@@ -42,7 +42,6 @@ export async function getRecentComments(limit = 10) {
 }
 
 export async function getAllCommentsForModeration() {
-	const { posts } = await import("@/lib/db/schema");
 	return db
 		.select({
 			id: comments.id,

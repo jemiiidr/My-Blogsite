@@ -26,7 +26,7 @@ export function PostCard({
 			>
 				<Link
 					href={`/blog/${post.slug}`}
-					className={`relative block overflow-hidden bg-surface-muted ${featured ? "min-h-72" : "aspect-[16/10]"}`}
+					className={`relative block overflow-hidden bg-surface-muted ${featured ? "min-h-72" : "aspect-16/10"}`}
 				>
 					<Image
 						src={post.coverImageUrl}
@@ -40,7 +40,7 @@ export function PostCard({
 						}
 						className="object-cover transition duration-700 group-hover:scale-105"
 					/>
-					<div className="absolute inset-0 bg-gradient-to-t from-black/25 to-transparent opacity-60" />
+					<div className="absolute inset-0 bg-linear-to-t from-black/25 to-transparent opacity-60" />
 				</Link>
 				<div
 					className={`flex flex-1 flex-col ${featured ? "p-7 md:p-9" : "p-5"}`}

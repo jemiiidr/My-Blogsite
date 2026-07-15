@@ -9,6 +9,12 @@
 	--muted: #6b6870;
 	--accent: #7157f6;
 	--accent-soft: #eeeaff;
+	--success: #d0fae5;
+	--success-txt: #4bd29f;
+	--fail: #fff1f2;
+	--fail-txt: #a50036;
+	--hidden: #fef3c6;
+	--hidden-txt: #bb4d00;
 }
 
 .dark {
@@ -20,6 +26,12 @@
 	--muted: #a2a7b0;
 	--accent: #a896ff;
 	--accent-soft: #2b2548;
+	--success: #002c22;
+	--success-txt: #5ee9b5;
+	--fail: #380c1f;
+	--fail-txt: #ffccd3;
+	--hidden: #451901;
+	--hidden-txt: #fcd030;
 }
 
 @theme inline {
@@ -31,6 +43,12 @@
 	--color-muted: var(--muted);
 	--color-accent: var(--accent);
 	--color-accent-soft: var(--accent-soft);
+	--color-success: var(--success);
+	--color-success-txt: var(--success-txt);
+	--color-fail: var(--fail);
+	--color-fail-txt: var(--fail-txt);
+	--color-hidden: var(--hidden);
+	--color-hidden-txt: var(--hidden-txt);
 
 	--font-sans: var(--font-geist-sans);
 	--font-mono: var(--font-geist-mono);
@@ -70,7 +88,7 @@ html.lenis body {
 }
 
 .lenis.lenis-smooth {
-	scroll-behavior: auto !important;
+	scroll-behavior: auto;
 }
 
 .lenis.lenis-stopped {

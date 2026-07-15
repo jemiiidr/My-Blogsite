@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { deletePost } from "@/app/actions/posts";
+import { DeletePostDialog } from "@/components/dashboard/delete-post-dialogue";
 import { requireAuthor } from "@/lib/auth/permissions";
 import { getDashboardPosts } from "@/lib/db/queries/posts";
 import { formatDate } from "@/lib/utils/format-date";
@@ -48,7 +48,7 @@ export default async function DashboardPostsPage() {
 								<div className="min-w-0">
 									<div className="mb-1 flex flex-wrap items-center gap-2">
 										<span
-											className={`rounded-full px-2 py-1 text-[10px] font-semibold uppercase tracking-wide ${post.status === "published" ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300" : "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300"}`}
+											className={`rounded-full px-2 py-1 text-[10px] font-semibold uppercase tracking-wide ${post.status === "published" ? "bg-success text-success-txt" : "bg-hidden text-hidden-txt"}`}
 										>
 											{post.status}
 										</span>
@@ -69,15 +69,7 @@ export default async function DashboardPostsPage() {
 									>
 										Edit
 									</Link>
-									<form action={deletePost}>
-										<input type="hidden" name="postId" value={post.id} />
-										<button
-											type="submit"
-											className="rounded-full border px-4 py-2 text-sm font-semibold text-rose-500 hover:border-rose-400"
-										>
-											Delete
-										</button>
-									</form>
+									<DeletePostDialog postId={post.id} postTitle={post.title} />
 								</div>
 							</article>
 						))
