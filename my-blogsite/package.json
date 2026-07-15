@@ -21,6 +21,7 @@
 		"@tiptap/pm": "^3.27.3",
 		"@tiptap/react": "^3.27.3",
 		"@tiptap/starter-kit": "^3.27.3",
+		"@vercel/blob": "^2.6.1",
 		"bcryptjs": "^3.0.3",
 		"drizzle-orm": "^0.45.2",
 		"jose": "^6.2.3",
