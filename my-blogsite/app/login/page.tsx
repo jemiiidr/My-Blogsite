@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "Log in" };
 
 export default async function LoginPage() {
 	const user = await getCurrentUser();
-	if (user) redirect(user.role === "user" ? "/profile" : "/dashboard");
+	if (user) redirect(user.role === "user" ? "/" : "/");
 
 	return (
 		<div className="mx-auto grid min-h-[75vh] max-w-6xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:px-8">

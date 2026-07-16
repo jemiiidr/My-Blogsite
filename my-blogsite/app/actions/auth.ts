@@ -45,7 +45,7 @@ export async function login(
 
 	await createSession(user.id);
 	revalidatePath("/", "layout");
-	redirect(user.role === "user" ? "/profile" : "/dashboard");
+	redirect(user.role === "user" ? "/" : "/");
 }
 
 export async function logout() {

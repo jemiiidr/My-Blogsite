@@ -3,11 +3,11 @@ import Link from "next/link";
 import { getCategories } from "@/lib/db/queries/categories";
 
 const gradients = [
-	"from-violet-200 to-fuchsia-100 dark:from-violet-950 dark:to-fuchsia-950",
-	"from-cyan-200 to-blue-100 dark:from-cyan-950 dark:to-blue-950",
-	"from-rose-200 to-orange-100 dark:from-rose-950 dark:to-orange-950",
-	"from-emerald-200 to-lime-100 dark:from-emerald-950 dark:to-lime-950",
-	"from-amber-200 to-yellow-100 dark:from-amber-950 dark:to-yellow-950",
+	"from-violet-200 to-fuchsia-100",//dark:from-violet-950 dark:to-fuchsia-950
+	"from-cyan-200 to-blue-100", // dark:from-cyan-950 dark:to-blue-950
+	"from-rose-200 to-orange-100", //dark:from-rose-950 dark:to-orange-950
+	"from-emerald-200 to-lime-100", // dark:from-emerald-950 dark:to-lime-950
+	"from-amber-200 to-yellow-100", //dark:from-amber-950 dark:to-yellow-950
 ];
 
 export async function CategoryStrip() {
@@ -31,7 +31,7 @@ export async function CategoryStrip() {
 							href={`/blog?category=${category.slug}`}
 							className={`group min-h-36 rounded-3xl border bg-linear-to-br p-5 transition hover:-translate-y-1 ${gradients[index % gradients.length]}`}
 						>
-							<div className="grid size-10 place-items-center rounded-xl border border-white/50 bg-white/40 font-semibold backdrop-blur dark:bg-black/20">
+							<div className="grid size-10 place-items-center rounded-xl font-semibold backdrop-blur ">
 								{String(index + 1).padStart(2, "0")}
 							</div>
 							<p className="mt-7 font-semibold group-hover:text-accent">

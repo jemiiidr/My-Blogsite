@@ -46,7 +46,7 @@ export function HeroSection() {
 							<p className="text-xs font-semibold uppercase tracking-widest">
 								Featured
 							</p>
-							<p className="mt-24 text-3xl font-semibold leading-tight">
+							<p className="mt-5 text-3xl font-semibold leading-tight">
 								Stories designed to make you pause.
 							</p>
 						</div>
