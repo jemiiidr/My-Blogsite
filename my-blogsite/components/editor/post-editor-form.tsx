@@ -347,11 +347,7 @@ export function PostEditorForm({
 					<div className="relative aspect-16/10 overflow-hidden bg-surface-muted">
 						<Image
 							src={coverPreview}
-							alt={
-								hasDisplayedCover
-									? "Story cover preview"
-									: ""
-							}
+							alt={hasDisplayedCover ? "Story cover preview" : ""}
 							fill
 							sizes="(min-width: 1280px) 352px, 100vw"
 							className="object-cover transition duration-500 hover:scale-[1.02]"

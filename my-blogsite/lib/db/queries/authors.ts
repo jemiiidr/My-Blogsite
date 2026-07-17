@@ -69,3 +69,17 @@ export async function getAuthorBySlug(slug: string) {
 		posts: allPosts.filter((post) => post.author.id === author.id),
 	};
 }
+
+export async function getUsersAvailableForAuthorRole() {
+	return db
+		.select({
+			id: users.id,
+			name: users.name,
+			email: users.email,
+			avatarUrl: users.avatarUrl,
+			createdAt: users.createdAt,
+		})
+		.from(users)
+		.where(and(eq(users.role, "user"), eq(users.isActive, true)))
+		.orderBy(asc(users.name));
+}

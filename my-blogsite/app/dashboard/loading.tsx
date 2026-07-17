@@ -44,11 +44,7 @@ const commentSkeletons = [
 	{ id: "comment-4" },
 ];
 
-function Skeleton({
-	className = "",
-}: {
-	className?: string;
-}) {
+function Skeleton({ className = "" }: { className?: string }) {
 	return (
 		<div
 			className={`animate-pulse rounded-full bg-surface-muted ${className}`}
@@ -58,11 +54,7 @@ function Skeleton({
 
 export default function DashboardLoading() {
 	return (
-		<div
-			className="space-y-6"
-			aria-busy="true"
-			aria-label="Loading dashboard"
-		>
+		<div className="space-y-6" aria-busy="true">
 			<span className="sr-only">Loading dashboard analytics...</span>
 
 			<div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
@@ -185,10 +177,7 @@ export default function DashboardLoading() {
 
 					<div className="mt-5 divide-y divide-border">
 						{commentSkeletons.map((comment) => (
-							<div
-								key={comment.id}
-								className="space-y-3 py-4 first:pt-0"
-							>
+							<div key={comment.id} className="space-y-3 py-4 first:pt-0">
 								<div className="flex items-center gap-3">
 									<Skeleton className="size-9 shrink-0" />
 

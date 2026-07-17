@@ -1,82 +1,70 @@
 "use server";
 
-import { randomUUID } from "node:crypto";
-
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-import { hashPassword } from "@/lib/auth/password";
 import { requireAdmin } from "@/lib/auth/permissions";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
-import { slugify } from "@/lib/utils/slugify";
 import {
 	authorStatusSchema,
-	createAuthorSchema,
+	promoteUserToAuthorSchema,
 } from "@/lib/validations/author";
 
 export type AuthorActionState = {
 	success: boolean;
 	message?: string;
-	fieldErrors?: Record<string, string[] | undefined>;
+	fieldErrors?: {
+		userId?: string[];
+	};
 };
 
-export async function createAuthor(
+export async function promoteUserToAuthor(
 	_previousState: AuthorActionState,
 	formData: FormData,
 ): Promise<AuthorActionState> {
 	await requireAdmin();
 
-	const parsed = createAuthorSchema.safeParse({
-		name: formData.get("name"),
-		email: formData.get("email"),
-		password: formData.get("password"),
-		bio: formData.get("bio"),
-		avatarUrl: formData.get("avatarUrl"),
+	const parsed = promoteUserToAuthorSchema.safeParse({
+		userId: formData.get("userId"),
 	});
 
 	if (!parsed.success) {
 		return {
 			success: false,
 			fieldErrors: z.flattenError(parsed.error).fieldErrors,
-			message: "Please correct the author details.",
+			message: "Select a user to promote.",
 		};
 	}
 
-	const email = parsed.data.email.toLowerCase();
-
-	const [existingUser] = await db
-		.select({
-			id: users.id,
+	const [promotedUser] = await db
+		.update(users)
+		.set({
+			role: "author",
+			updatedAt: new Date(),
 		})
-		.from(users)
-		.where(eq(users.email, email))
-		.limit(1);
+		.where(
+			and(
+				eq(users.id, parsed.data.userId),
+				eq(users.role, "user"),
+				eq(users.isActive, true),
+			),
+		)
+		.returning({
+			id: users.id,
+			name: users.name,
+		});
 
-	if (existingUser) {
+	if (!promotedUser) {
 		return {
 			success: false,
 			fieldErrors: {
-				email: ["An account already uses this email address."],
+				userId: ["This user is unavailable or is already an author."],
 			},
-			message: "The author account could not be created.",
+			message: "The user could not be promoted.",
 		};
 	}
-
-	const baseSlug = slugify(parsed.data.name) || "author";
-	const uniqueSuffix = randomUUID().slice(0, 8);
-	const slug = `${baseSlug}-${uniqueSuffix}`;
-
-	await db.insert(users).values({
-		name: parsed.data.name,
-		email,
-		passwordHash: hashPassword(parsed.data.password),
-		role: "author",
-		slug,
-		avatarUrl: parsed.data.avatarUrl || "/images/avatars/default-author.svg",
-		bio: parsed.data.bio,
-	});
 
 	revalidatePath("/dashboard/authors");
 	revalidatePath("/authors");
@@ -84,7 +72,7 @@ export async function createAuthor(
 
 	return {
 		success: true,
-		message: "Author account created.",
+		message: `${promotedUser.name} is now an author.`,
 	};
 }
 
@@ -111,11 +99,7 @@ export async function toggleAuthorStatus(formData: FormData): Promise<void> {
 		.where(eq(users.id, parsed.data.userId))
 		.limit(1);
 
-	if (!targetUser) {
-		return;
-	}
-
-	if (targetUser.role !== "author") {
+	if (targetUser?.role !== "author") {
 		return;
 	}
 
