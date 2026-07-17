@@ -70,17 +70,17 @@ export function HeroSection() {
 							rotate-[-8deg] rounded-[2.5rem]
 							border border-border
 							bg-linear-to-br
-							from-[var(--hero-featured-from)]
-							via-[var(--hero-featured-via)]
-							to-[var(--hero-featured-to)]
+							from-(--hero-featured-from)
+							via-(--hero-featured-via)
+							to-(--hero-featured-to)
 							p-6 shadow-2xl
 						"
 					>
 						<div
 							className="
 								h-full rounded-[1.8rem]
-								border border-[var(--hero-glass-border)]
-								bg-[var(--hero-glass-background)]
+								border border-(--hero-glass-border)
+								bg-(--hero-glass-background)
 								p-5 backdrop-blur
 							"
 						>
@@ -106,9 +106,9 @@ export function HeroSection() {
 							className="
 								h-40 rounded-[1.75rem]
 								bg-linear-to-br
-								from-[var(--hero-latest-from)]
-								via-[var(--hero-latest-via)]
-								to-[var(--hero-latest-to)]
+								from-(--hero-latest-from)
+								via-(--hero-latest-via)
+								to-(--hero-latest-to)
 							"
 						/>
 

@@ -76,7 +76,7 @@ export async function getDashboardAnalytics(user: {
 		},
 		topPosts: [...dashboardPosts]
 			.sort((a, b) => b.engagement.views - a.engagement.views)
-			.slice(0, 5),
+			.slice(0, 4),
 	};
 }
 
