@@ -34,6 +34,8 @@ const designId = randomUUID();
 const cultureId = randomUUID();
 const technologyId = randomUUID();
 const postIds = [randomUUID(), randomUUID(), randomUUID()];
+const creativityId = crypto.randomUUID();
+const lifestyleId = crypto.randomUUID();
 
 const storyBody = (heading: string, quote: string) => `
 <p>Some ideas ask to be consumed quickly. Others invite us to slow down, notice the edges, and understand why they matter.</p>
@@ -94,8 +96,9 @@ async function seed() {
 		{ id: designId, name: "Design", slug: "design" },
 		{ id: cultureId, name: "Culture", slug: "culture" },
 		{ id: technologyId, name: "Technology", slug: "technology" },
+		{ id: creativityId, name: "Creativity", slug: "creativity" },
+		{ id: lifestyleId, name: "Lifestyle", slug: "lifestyle" },
 	]);
-
 	const publishedAt = new Date();
 	await db.insert(posts).values([
 		{
@@ -110,7 +113,7 @@ async function seed() {
 			),
 			authorId: adminId,
 			categoryId: designId,
-			coverImageUrl: "/images/posts/story-gradient.svg",
+			coverImageUrl: "/images/post/blog1.jpg",
 			status: "published",
 			publishedAt,
 			tags: ["design", "experience", "storytelling"],
@@ -127,7 +130,7 @@ async function seed() {
 			),
 			authorId: authorId,
 			categoryId: cultureId,
-			coverImageUrl: "/images/posts/creative-orbit.svg",
+			coverImageUrl: "/images/post/blog2.jpg",
 			status: "published",
 			publishedAt: new Date(Date.now() - 86_400_000 * 2),
 			tags: ["creativity", "habits", "culture"],
@@ -144,7 +147,7 @@ async function seed() {
 			),
 			authorId: authorId,
 			categoryId: technologyId,
-			coverImageUrl: "/images/posts/future-shapes.svg",
+			coverImageUrl: "/images/post/blog3.jpg",
 			status: "published",
 			publishedAt: new Date(Date.now() - 86_400_000 * 5),
 			tags: ["technology", "future", "community"],
@@ -189,7 +192,7 @@ async function seed() {
 		{ postId: postIds[2], channel: "linkedin" },
 	]);
 
-	console.log("Seed complete: 3 accounts, 3 categories, 3 published stories.");
+	console.log("Seed complete: 3 accounts, 5 categories, 3 published stories.");
 }
 
 seed().catch((error) => {
