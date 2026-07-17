@@ -9,6 +9,10 @@ import { getCurrentUser } from "@/lib/auth/dal";
 import { db } from "@/lib/db";
 import { likes, postViews, shares } from "@/lib/db/schema";
 import {
+	checkRateLimit,
+	getRequestIdentifier,
+} from "@/lib/security/rate-limit";
+import {
 	postEngagementSchema,
 	shareSchema,
 } from "@/lib/validations/engagement";
@@ -27,7 +31,8 @@ export async function toggleLike(
 		postId: formData.get("postId"),
 		slug: formData.get("slug"),
 	});
-	if (!parsed.success) return { liked: false, message: "Invalid post." };
+	if (!parsed.success)
+		return { liked: _previousState.liked, message: "Invalid post." };
 
 	const user = await getCurrentUser();
 	if (!user) {
@@ -35,6 +40,20 @@ export async function toggleLike(
 			liked: false,
 			requiresLogin: true,
 			message: "Log in to like this story.",
+		};
+	}
+
+	const requestIdentifier = await getRequestIdentifier();
+	const rateLimit = await checkRateLimit({
+		action: "engagement:like",
+		identifier: `${user.id}:${requestIdentifier}`,
+		limit: 30,
+		windowMs: 60 * 1000,
+	});
+	if (!rateLimit.allowed) {
+		return {
+			liked: _previousState.liked,
+			message: "You are updating likes too quickly. Please try again shortly.",
 		};
 	}
 
@@ -63,6 +82,15 @@ export async function recordPostView(input: { postId: string; slug: string }) {
 	if (!parsed.success) return;
 
 	const user = await getCurrentUser();
+	const requestIdentifier = await getRequestIdentifier();
+	const rateLimit = await checkRateLimit({
+		action: "engagement:view",
+		identifier: `${user?.id ?? requestIdentifier}:${parsed.data.postId}`,
+		limit: 30,
+		windowMs: 60 * 60 * 1000,
+	});
+	if (!rateLimit.allowed) return;
+
 	const cookieStore = await cookies();
 	let visitorId = cookieStore.get("lucid_visitor")?.value;
 	if (!visitorId) {
@@ -112,6 +140,15 @@ export async function recordShare(input: {
 	if (!parsed.success) return;
 
 	const user = await getCurrentUser();
+	const requestIdentifier = await getRequestIdentifier();
+	const rateLimit = await checkRateLimit({
+		action: "engagement:share",
+		identifier: `${user?.id ?? requestIdentifier}:${parsed.data.postId}`,
+		limit: 20,
+		windowMs: 10 * 60 * 1000,
+	});
+	if (!rateLimit.allowed) return;
+
 	await db.insert(shares).values({
 		postId: parsed.data.postId,
 		userId: user?.id ?? null,

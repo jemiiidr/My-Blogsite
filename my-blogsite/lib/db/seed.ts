@@ -11,6 +11,7 @@ import {
 	likes,
 	posts,
 	postViews,
+	rateLimitEvents,
 	sessions,
 	shares,
 	users,
@@ -47,6 +48,7 @@ const storyBody = (heading: string, quote: string) => `
 async function seed() {
 	console.log("Resetting demo data...");
 	await db.delete(sessions);
+	await db.delete(rateLimitEvents);
 	await db.delete(shares);
 	await db.delete(postViews);
 	await db.delete(likes);

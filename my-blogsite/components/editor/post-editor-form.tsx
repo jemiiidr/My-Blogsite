@@ -1,18 +1,30 @@
 "use client";
 
 import {
+	AlertCircle,
 	CheckCircle2,
 	Eye,
 	FileImage,
 	FolderOpen,
 	Hash,
-	KeyRound,
-	Link2,
+	ImageUp,
+	RotateCcw,
 	Sparkles,
+	Trash2,
+	X,
 } from "lucide-react";
 import { motion } from "motion/react";
 import Image from "next/image";
-import { useActionState, useMemo, useState } from "react";
+import {
+	type ChangeEvent,
+	type FormEvent,
+	startTransition,
+	useActionState,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 
 import type { PostActionState } from "@/app/actions/posts";
 import {
@@ -20,12 +32,9 @@ import {
 	type RichTextEditorValue,
 } from "@/components/editor/rich-text-editor";
 import { FieldError } from "@/components/ui/field-error";
-import { FormSubmitButton } from "@/components/ui/form-submit-button";
-import { slugify } from "@/lib/utils/slugify";
 
 export type EditorPost = {
 	title: string;
-	slug: string;
 	excerpt: string;
 	body: string;
 	coverImageUrl: string;
@@ -38,6 +47,15 @@ type EditorAction = (
 	state: PostActionState,
 	formData: FormData,
 ) => Promise<PostActionState>;
+
+type PostEditorFormProps = {
+	action: EditorAction;
+	categories: Array<{
+		id: string;
+		name: string;
+	}>;
+	initialPost?: EditorPost;
+};
 
 const initialActionState: PostActionState = {
 	success: false,
@@ -58,66 +76,218 @@ export function PostEditorForm({
 	action,
 	categories,
 	initialPost,
-}: {
-	action: EditorAction;
-	categories: Array<{
-		id: string;
-		name: string;
-	}>;
-	initialPost?: EditorPost;
-}) {
-	const [state, formAction] = useActionState(action, initialActionState);
-
-	const [title, setTitle] = useState(initialPost?.title ?? "");
-	const [slug, setSlug] = useState(initialPost?.slug ?? "");
-	const [slugEdited, setSlugEdited] = useState(Boolean(initialPost?.slug));
-
-	const [body, setBody] = useState(initialPost?.body ?? "<p></p>");
-	const [bodyText, setBodyText] = useState(stripHtml(initialPost?.body ?? ""));
-
-	const [excerpt, setExcerpt] = useState(initialPost?.excerpt ?? "");
-	const [cover, setCover] = useState(
-		initialPost?.coverImageUrl ?? fallbackCover,
+}: PostEditorFormProps) {
+	const [state, formAction, pending] = useActionState(
+		action,
+		initialActionState,
 	);
 
+	const [title, setTitle] = useState(
+		initialPost?.title ?? "",
+	);
+
+	const [body, setBody] = useState(
+		initialPost?.body ?? "<p></p>",
+	);
+
+	const [bodyText, setBodyText] = useState(
+		stripHtml(initialPost?.body ?? ""),
+	);
+
+	const [excerpt, setExcerpt] = useState(
+		initialPost?.excerpt ?? "",
+	);
+
+	const [categoryId, setCategoryId] = useState(
+		initialPost?.categoryId ?? "",
+	);
+
+	const [tags, setTags] = useState(
+		initialPost?.tags.join(", ") ?? "",
+	);
+
+	const [selectedImageName, setSelectedImageName] =
+		useState("");
+
+	const [selectedImagePreview, setSelectedImagePreview] =
+		useState<string | null>(null);
+
+	const [removeCoverImage, setRemoveCoverImage] =
+		useState(false);
+
+	const fileInputRef = useRef<HTMLInputElement>(null);
+	const coverObjectUrlRef = useRef<string | null>(null);
+
+	const currentCoverImage =
+		initialPost?.coverImageUrl || null;
+
+	const hasSavedCover =
+		Boolean(currentCoverImage) &&
+		currentCoverImage !== fallbackCover;
+
 	const wordCount = useMemo(() => {
-		return bodyText.trim().split(/\s+/).filter(Boolean).length;
+		return bodyText
+			.trim()
+			.split(/\s+/)
+			.filter(Boolean).length;
 	}, [bodyText]);
 
-	const readingMinutes = Math.max(1, Math.ceil(wordCount / 220));
-	const coverPreview = cover.trim() || fallbackCover;
-	const canPreviewWithNextImage = coverPreview.startsWith("/");
+	const readingMinutes = Math.max(
+		1,
+		Math.ceil(wordCount / 220),
+	);
 
-	function handleTitleChange(value: string) {
-		setTitle(value);
+	const coverPreview = removeCoverImage
+		? fallbackCover
+		: selectedImagePreview ||
+			currentCoverImage ||
+			fallbackCover;
 
-		if (!slugEdited) {
-			setSlug(slugify(value));
-		}
-	}
+	const hasDisplayedCover =
+		!removeCoverImage &&
+		Boolean(selectedImagePreview || hasSavedCover);
 
-	function handleSlugChange(value: string) {
-		setSlugEdited(true);
-		setSlug(value);
-	}
-
-	function handleEditorChange(value: RichTextEditorValue) {
+	function handleEditorChange(
+		value: RichTextEditorValue,
+	) {
 		setBody(value.html);
 		setBodyText(value.text);
 	}
 
+	function clearCoverObjectUrl() {
+		if (!coverObjectUrlRef.current) {
+			return;
+		}
+
+		URL.revokeObjectURL(
+			coverObjectUrlRef.current,
+		);
+
+		coverObjectUrlRef.current = null;
+	}
+
+	function clearSelectedImage() {
+		clearCoverObjectUrl();
+
+		setSelectedImageName("");
+		setSelectedImagePreview(null);
+
+		if (fileInputRef.current) {
+			fileInputRef.current.value = "";
+		}
+	}
+
+	function handleImageChange(
+		event: ChangeEvent<HTMLInputElement>,
+	) {
+		const file = event.target.files?.[0];
+
+		clearCoverObjectUrl();
+
+		if (!file) {
+			setSelectedImageName("");
+			setSelectedImagePreview(null);
+			return;
+		}
+
+		const objectUrl = URL.createObjectURL(file);
+
+		coverObjectUrlRef.current = objectUrl;
+
+		setSelectedImageName(file.name);
+		setSelectedImagePreview(objectUrl);
+		setRemoveCoverImage(false);
+	}
+
+	function handleClearSelectedImage() {
+		clearSelectedImage();
+		setRemoveCoverImage(false);
+	}
+
+	function handleRemoveCoverImage() {
+		clearSelectedImage();
+		setRemoveCoverImage(true);
+	}
+
+	function handleUndoRemoveCoverImage() {
+		setRemoveCoverImage(false);
+	}
+
+	function handleSubmit(
+		event: FormEvent<HTMLFormElement>,
+	) {
+		event.preventDefault();
+
+		const form = event.currentTarget;
+
+		if (!form.reportValidity()) {
+			return;
+		}
+
+		const formData = new FormData(form);
+
+		const nativeEvent =
+			event.nativeEvent as SubmitEvent;
+
+		const submitter = nativeEvent.submitter;
+
+		if (
+			submitter instanceof HTMLButtonElement &&
+			submitter.name
+		) {
+			formData.set(
+				submitter.name,
+				submitter.value,
+			);
+		}
+
+		startTransition(() => {
+			formAction(formData);
+		});
+	}
+
+	useEffect(() => {
+		return () => {
+			if (coverObjectUrlRef.current) {
+				URL.revokeObjectURL(
+					coverObjectUrlRef.current,
+				);
+			}
+		};
+	}, []);
+
 	return (
 		<form
-			action={formAction}
-			noValidate
+			onSubmit={handleSubmit}
 			className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]"
 		>
-			<input type="hidden" name="body" value={body} />
+			<input
+				type="hidden"
+				name="body"
+				value={body}
+			/>
+
+			<input
+				type="hidden"
+				name="removeCoverImage"
+				value={
+					removeCoverImage ? "true" : "false"
+				}
+			/>
 
 			<motion.section
-				initial={{ opacity: 0, y: 16 }}
-				animate={{ opacity: 1, y: 0 }}
-				transition={{ duration: 0.45, delay: 0.05 }}
+				initial={{
+					opacity: 0,
+					y: 16,
+				}}
+				animate={{
+					opacity: 1,
+					y: 0,
+				}}
+				transition={{
+					duration: 0.45,
+					delay: 0.05,
+				}}
 				className="min-w-0 space-y-6"
 			>
 				<div className="relative overflow-hidden rounded-4xl border border-border bg-surface p-5 shadow-sm sm:p-7">
@@ -129,15 +299,20 @@ export function PostEditorForm({
 								<p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">
 									Story identity
 								</p>
+
 								<p className="mt-1 text-sm text-muted">
-									Give readers a clear reason to continue.
+									The URL is generated automatically from
+									the title.
 								</p>
 							</div>
 
 							<Sparkles className="size-5 text-accent" />
 						</div>
 
-						<label htmlFor="title" className="sr-only">
+						<label
+							htmlFor="title"
+							className="sr-only"
+						>
 							Story title
 						</label>
 
@@ -145,121 +320,155 @@ export function PostEditorForm({
 							id="title"
 							name="title"
 							value={title}
-							onChange={(event) => handleTitleChange(event.target.value)}
+							onChange={(event) =>
+								setTitle(event.target.value)
+							}
 							rows={2}
 							maxLength={140}
+							required
 							placeholder="A title readers cannot ignore"
 							className="w-full resize-none bg-transparent text-3xl font-semibold leading-tight tracking-[-0.03em] outline-none placeholder:text-muted/55 sm:text-5xl"
 						/>
 
 						<div className="mt-2 flex items-center justify-between text-xs text-muted">
-							<span>Make it specific, clear, and memorable.</span>
+							<span>
+								Make it specific, clear, and
+								memorable.
+							</span>
+
 							<span>{title.length}/140</span>
 						</div>
 
-						<FieldError errors={state.fieldErrors?.title} />
+						<FieldError
+							errors={
+								state.fieldErrors?.title
+							}
+						/>
 
-						<div className="mt-7 grid gap-4 sm:grid-cols-2">
-							<div>
-								<label
-									htmlFor="slug"
-									className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted"
+						<div className="mt-7">
+							<label
+								htmlFor="categoryId"
+								className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted"
+							>
+								<FolderOpen className="size-3.5" />
+								Category
+							</label>
+
+							<select
+								id="categoryId"
+								name="categoryId"
+								value={categoryId}
+								onChange={(event) =>
+									setCategoryId(
+										event.target.value,
+									)
+								}
+								required
+								className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-accent"
+							>
+								<option
+									value=""
+									disabled
 								>
-									<Link2 className="size-3.5" />
-									URL slug
-								</label>
+									Select category
+								</option>
 
-								<div className="flex items-center overflow-hidden rounded-2xl border border-border bg-background focus-within:border-accent">
-									<span className="border-r border-border px-3 py-3 text-sm text-muted">
-										/blog/
-									</span>
-
-									<input
-										id="slug"
-										name="slug"
-										value={slug}
-										onChange={(event) => handleSlugChange(event.target.value)}
-										placeholder="generated-from-title"
-										className="min-w-0 flex-1 bg-transparent px-3 py-3 text-sm outline-none"
-									/>
-								</div>
-
-								<FieldError errors={state.fieldErrors?.slug} />
-							</div>
-
-							<div>
-								<label
-									htmlFor="categoryId"
-									className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted"
-								>
-									<FolderOpen className="size-3.5" />
-									Category
-								</label>
-
-								<select
-									id="categoryId"
-									name="categoryId"
-									defaultValue={initialPost?.categoryId ?? ""}
-									className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-accent"
-								>
-									<option value="">Select category</option>
-
-									{categories.map((category) => (
-										<option key={category.id} value={category.id}>
-											{category.name}
+								{categories.map(
+									(category) => (
+										<option
+											key={
+												category.id
+											}
+											value={
+												category.id
+											}
+										>
+											{
+												category.name
+											}
 										</option>
-									))}
-								</select>
+									),
+								)}
+							</select>
 
-								<FieldError errors={state.fieldErrors?.categoryId} />
-							</div>
+							<FieldError
+								errors={
+									state.fieldErrors
+										?.categoryId
+								}
+							/>
 						</div>
 					</div>
 				</div>
 
 				<div>
 					<RichTextEditor
-						initialHtml={initialPost?.body ?? "<p></p>"}
-						onChange={handleEditorChange}
+						initialHtml={
+							initialPost?.body ??
+							"<p></p>"
+						}
+						onChange={
+							handleEditorChange
+						}
 					/>
 
-					<FieldError errors={state.fieldErrors?.body} />
+					<FieldError
+						errors={
+							state.fieldErrors?.body
+						}
+					/>
 				</div>
 			</motion.section>
 
 			<motion.aside
-				initial={{ opacity: 0, x: 16 }}
-				animate={{ opacity: 1, x: 0 }}
-				transition={{ duration: 0.45, delay: 0.1 }}
+				initial={{
+					opacity: 0,
+					x: 16,
+				}}
+				animate={{
+					opacity: 1,
+					x: 0,
+				}}
+				transition={{
+					duration: 0.45,
+					delay: 0.1,
+				}}
 				className="space-y-5 xl:sticky xl:top-24 xl:h-fit"
 			>
 				<div className="overflow-hidden rounded-4xl border border-border bg-surface shadow-sm">
 					<div className="relative aspect-16/10 overflow-hidden bg-surface-muted">
-						{canPreviewWithNextImage ? (
-							<Image
-								src={coverPreview}
-								alt="Story cover preview"
-								fill
-								sizes="(min-width: 1280px) 352px, 100vw"
-								className="object-cover transition duration-500 hover:scale-[1.02]"
-								unoptimized={coverPreview.endsWith(".svg")}
-							/>
-						) : (
-							<div className="absolute inset-0 grid place-items-center bg-linear-to-br from-accent-soft via-surface-muted to-background p-6 text-center">
-								<div>
-									<FileImage className="mx-auto size-8 text-accent" />
+						<Image
+							src={coverPreview}
+							alt={
+								hasDisplayedCover
+									? "Story cover preview"
+									: "Placeholder story cover"
+							}
+							fill
+							sizes="(min-width: 1280px) 352px, 100vw"
+							className="object-cover transition duration-500 hover:scale-[1.02]"
+							unoptimized={
+								coverPreview.startsWith(
+									"blob:",
+								) ||
+								!coverPreview.startsWith(
+									"/",
+								) ||
+								coverPreview.endsWith(
+									".svg",
+								)
+							}
+						/>
 
-									<p className="mt-3 text-sm font-semibold">
-										Remote cover selected
-									</p>
-
-									<p className="mt-1 line-clamp-2 break-all text-xs text-muted">
-										Add its host to your Next.js image configuration to preview
-										it.
-									</p>
+						{!hasDisplayedCover ? (
+							<div className="absolute inset-0 grid place-items-center bg-black/10">
+								<div className="rounded-full border border-white/25 bg-black/35 px-4 py-2 text-xs font-semibold text-white backdrop-blur-sm">
+									{removeCoverImage
+										? "Cover will be removed"
+										: "No cover selected"}
 								</div>
 							</div>
-						)}
+						) : null}
 
 						<div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/70 to-transparent px-5 pb-4 pt-12 text-white">
 							<p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/75">
@@ -267,34 +476,97 @@ export function PostEditorForm({
 							</p>
 
 							<p className="mt-1 line-clamp-1 font-medium">
-								{title || "Untitled story"}
+								{title ||
+									"Untitled story"}
 							</p>
 						</div>
 					</div>
 
 					<div className="p-5">
 						<label
-							htmlFor="coverImageUrl"
+							htmlFor="coverImage"
 							className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted"
 						>
-							<FileImage className="size-3.5" />
-							Cover image path or URL
+							<ImageUp className="size-3.5" />
+
+							{initialPost
+								? "Replace cover image"
+								: "Upload cover image"}
 						</label>
 
 						<input
-							id="coverImageUrl"
-							name="coverImageUrl"
-							value={cover}
-							onChange={(event) => setCover(event.target.value)}
-							placeholder="/images/posts/cover.webp"
-							className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-accent"
+							ref={fileInputRef}
+							id="coverImage"
+							name="coverImage"
+							type="file"
+							accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+							required={!initialPost}
+							onChange={
+								handleImageChange
+							}
+							className="block w-full rounded-2xl border border-border bg-background text-sm file:mr-3 file:border-0 file:border-r file:border-border file:bg-surface-muted file:px-4 file:py-3 file:text-sm file:font-semibold hover:file:bg-accent-soft"
 						/>
 
-						<p className="mt-2 text-xs leading-5 text-muted">
-							Use a local image path or an approved storage URL.
+						<div className="mt-3 flex flex-wrap gap-2">
+							{selectedImageName ? (
+								<button
+									type="button"
+									onClick={
+										handleClearSelectedImage
+									}
+									className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-2 text-xs font-semibold transition hover:border-accent hover:bg-accent-soft"
+								>
+									<X className="size-3.5" />
+									Clear selected image
+								</button>
+							) : null}
+
+							{removeCoverImage ? (
+								<button
+									type="button"
+									onClick={
+										handleUndoRemoveCoverImage
+									}
+									className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-2 text-xs font-semibold transition hover:border-accent hover:bg-accent-soft"
+								>
+									<RotateCcw className="size-3.5" />
+									Undo removal
+								</button>
+							) : initialPost &&
+							  hasSavedCover &&
+							  !selectedImageName ? (
+								<button
+									type="button"
+									onClick={
+										handleRemoveCoverImage
+									}
+									className="inline-flex items-center gap-1.5 rounded-full border border-fail px-3 py-2 text-xs font-semibold text-fail-txt transition hover:bg-fail"
+								>
+									<Trash2 className="size-3.5" />
+									Remove cover image
+								</button>
+							) : null}
+						</div>
+
+						<p className="mt-3 text-xs leading-5 text-muted">
+							{removeCoverImage
+								? "The current cover will be removed when you save this post."
+								: selectedImageName
+									? `Selected: ${selectedImageName}`
+									: initialPost &&
+										  hasSavedCover
+										? "Leave empty to keep the current cover. Maximum 4 MB."
+										: initialPost
+											? "No custom cover is currently saved. You may upload one."
+											: "A cover image is required. Maximum 4 MB."}
 						</p>
 
-						<FieldError errors={state.fieldErrors?.coverImageUrl} />
+						<FieldError
+							errors={
+								state.fieldErrors
+									?.coverImage
+							}
+						/>
 					</div>
 				</div>
 
@@ -304,7 +576,10 @@ export function PostEditorForm({
 							<p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">
 								Discovery
 							</p>
-							<h2 className="mt-1 font-semibold">Story details</h2>
+
+							<h2 className="mt-1 font-semibold">
+								Story details
+							</h2>
 						</div>
 
 						<Eye className="size-4.5 text-muted" />
@@ -323,7 +598,12 @@ export function PostEditorForm({
 								id="excerpt"
 								name="excerpt"
 								value={excerpt}
-								onChange={(event) => setExcerpt(event.target.value)}
+								onChange={(event) =>
+									setExcerpt(
+										event.target
+											.value,
+									)
+								}
 								rows={5}
 								maxLength={320}
 								placeholder="Write a concise preview for cards, search, and social sharing."
@@ -331,10 +611,16 @@ export function PostEditorForm({
 							/>
 
 							<div className="mt-1 text-right text-xs text-muted">
-								{excerpt.length}/320
+								{excerpt.length}
+								/320
 							</div>
 
-							<FieldError errors={state.fieldErrors?.excerpt} />
+							<FieldError
+								errors={
+									state.fieldErrors
+										?.excerpt
+								}
+							/>
 						</div>
 
 						<div>
@@ -349,16 +635,28 @@ export function PostEditorForm({
 							<input
 								id="tags"
 								name="tags"
-								defaultValue={initialPost?.tags.join(", ")}
+								value={tags}
+								onChange={(event) =>
+									setTags(
+										event.target
+											.value,
+									)
+								}
 								placeholder="design, culture, ideas"
 								className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-accent"
 							/>
 
 							<p className="mt-2 text-xs text-muted">
-								Separate tags using commas. A maximum of eight is stored.
+								Separate tags using
+								commas. A maximum of eight
+								is stored.
 							</p>
 
-							<FieldError errors={state.fieldErrors?.tags} />
+							<FieldError
+								errors={
+									state.fieldErrors?.tags
+								}
+							/>
 						</div>
 					</div>
 				</div>
@@ -366,35 +664,20 @@ export function PostEditorForm({
 				<div className="rounded-4xl border border-border bg-surface p-5 shadow-sm">
 					<div className="flex items-start gap-3">
 						<div className="grid size-10 shrink-0 place-items-center rounded-2xl bg-accent-soft text-accent">
-							<KeyRound className="size-4" />
+							<FileImage className="size-4" />
 						</div>
 
 						<div>
-							<h2 className="font-semibold">Publishing</h2>
+							<p className="font-semibold">
+								Ready to share?
+							</p>
+
 							<p className="mt-1 text-xs leading-5 text-muted">
-								Drafts do not need the publishing key.
+								Review your content
+								before publishing or save
+								it as a draft.
 							</p>
 						</div>
-					</div>
-
-					<div className="mt-5">
-						<label
-							htmlFor="publishPassword"
-							className="mb-2 block text-xs font-semibold uppercase tracking-wide text-muted"
-						>
-							Publishing key
-						</label>
-
-						<input
-							id="publishPassword"
-							name="publishPassword"
-							type="password"
-							autoComplete="off"
-							placeholder="Required when publishing"
-							className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-accent"
-						/>
-
-						<FieldError errors={state.fieldErrors?.publishPassword} />
 					</div>
 
 					{state.message ? (
@@ -408,35 +691,53 @@ export function PostEditorForm({
 							].join(" ")}
 						>
 							<div className="flex items-start gap-2">
-								<CheckCircle2 className="mt-0.5 size-4 shrink-0" />
-								<p>{state.message}</p>
+								{state.success ? (
+									<CheckCircle2 className="mt-0.5 size-4 shrink-0" />
+								) : (
+									<AlertCircle className="mt-0.5 size-4 shrink-0" />
+								)}
+
+								<p>
+									{state.message}
+								</p>
 							</div>
 						</div>
 					) : null}
 
 					<div className="mt-5 grid gap-2.5">
-						<FormSubmitButton
+						<button
+							type="submit"
 							name="intent"
 							value="published"
-							pendingLabel="Publishing story..."
-							className="w-full"
+							disabled={pending}
+							className="inline-flex w-full items-center justify-center rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
 						>
-							Publish story
-						</FormSubmitButton>
+							{pending
+								? "Publishing story..."
+								: "Publish story"}
+						</button>
 
-						<FormSubmitButton
+						<button
+							type="submit"
 							name="intent"
 							value="draft"
-							pendingLabel="Saving draft..."
-							className="w-full border border-border bg-surface text-foreground hover:border-accent hover:bg-accent-soft"
+							disabled={pending}
+							className="inline-flex w-full items-center justify-center rounded-full border border-border bg-surface px-5 py-3 text-sm font-semibold text-foreground transition hover:border-accent hover:bg-accent-soft disabled:cursor-not-allowed disabled:opacity-50"
 						>
-							Save as draft
-						</FormSubmitButton>
+							{pending
+								? "Saving..."
+								: "Save as draft"}
+						</button>
 					</div>
 
 					<div className="mt-4 flex items-center justify-between border-t border-border pt-4 text-xs text-muted">
-						<span>{wordCount} words</span>
-						<span>{readingMinutes} min read</span>
+						<span>
+							{wordCount} words
+						</span>
+
+						<span>
+							{readingMinutes} min read
+						</span>
 					</div>
 				</div>
 			</motion.aside>

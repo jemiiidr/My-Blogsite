@@ -6,6 +6,10 @@ import { revalidatePath } from "next/cache";
 import { getCurrentUser } from "@/lib/auth/dal";
 import { db } from "@/lib/db";
 import { comments, posts } from "@/lib/db/schema";
+import {
+	checkRateLimit,
+	getRequestIdentifier,
+} from "@/lib/security/rate-limit";
 import { commentSchema } from "@/lib/validations/comment";
 
 export type CommentActionState = {
@@ -47,6 +51,20 @@ export async function addComment(
 	}
 
 	const currentUser = await getCurrentUser();
+	const requestIdentifier = await getRequestIdentifier();
+	const rateLimit = await checkRateLimit({
+		action: "comment:create",
+		identifier: currentUser?.id ?? requestIdentifier,
+		limit: 5,
+		windowMs: 10 * 60 * 1000,
+	});
+	if (!rateLimit.allowed) {
+		return {
+			success: false,
+			message: "You are commenting too quickly. Please try again later.",
+		};
+	}
+
 	await db.insert(comments).values({
 		postId: parsed.data.postId,
 		authorName: currentUser?.name ?? parsed.data.authorName,

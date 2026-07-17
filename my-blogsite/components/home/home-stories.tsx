@@ -5,7 +5,7 @@ import { ArrowRightIcon } from "@/components/ui/icons";
 import { getPublishedPosts } from "@/lib/db/queries/posts";
 
 export async function HomeStories() {
-	const posts = await getPublishedPosts({ limit: 7 });
+	const posts = await getPublishedPosts({ limit: 4 });
 	if (!posts.length) return null;
 
 	const [featured, ...latest] = posts;

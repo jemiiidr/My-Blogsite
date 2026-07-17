@@ -22,9 +22,6 @@ export function Footer() {
 						<Link href="/authors" className="hover:text-accent">
 							Authors
 						</Link>
-						<Link href="/login" className="hover:text-accent">
-							Log in
-						</Link>
 					</div>
 				</div>
 				<div>

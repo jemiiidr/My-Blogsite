@@ -31,10 +31,22 @@ import { getReadingTime } from "@/lib/utils/reading-time";
 
 type PostPageProps = {
 	params: Promise<{ slug: string }>;
+	searchParams: Promise<{ commentPage?: string | string[] }>;
 };
 
-export default async function PostPage({ params }: PostPageProps) {
-	const { slug } = await params;
+export default async function PostPage({
+	params,
+	searchParams,
+}: PostPageProps) {
+	const [{ slug }, query] = await Promise.all([params, searchParams]);
+	const rawCommentPage = Array.isArray(query.commentPage)
+		? query.commentPage[0]
+		: query.commentPage;
+	const parsedCommentPage = Number.parseInt(rawCommentPage ?? "1", 10);
+	const commentPage =
+		Number.isFinite(parsedCommentPage) && parsedCommentPage > 0
+			? parsedCommentPage
+			: 1;
 	const post = await getPostBySlug(slug);
 	if (!post) notFound();
 
@@ -161,7 +173,11 @@ export default async function PostPage({ params }: PostPageProps) {
 									<div className="h-40 animate-pulse rounded-[1.75rem] bg-surface-muted" />
 								}
 							>
-								<CommentList postId={post.id} />
+								<CommentList
+									postId={post.id}
+									slug={post.slug}
+									page={commentPage}
+								/>
 							</Suspense>
 						</div>
 					</section>

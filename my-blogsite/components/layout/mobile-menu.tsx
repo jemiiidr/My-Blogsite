@@ -7,6 +7,7 @@ import {
 	LogIn,
 	LogOut,
 	PenLine,
+	UserPlus,
 	UserRound,
 	UsersRound,
 } from "lucide-react";
@@ -21,7 +22,7 @@ import { MenuIcon, XIcon } from "@/components/ui/icons";
 
 type MobileUser = {
 	name: string;
-	slug: string; 
+	slug: string;
 	role: "admin" | "author" | "user";
 } | null;
 
@@ -117,12 +118,15 @@ export function MobileMenu({ user }: { user: MobileUser }) {
 					},
 				]
 			: []),
-			...(user
+		...(user
 			? [
 					{
-						href: `/authors/${user.slug}`,
+						href: user.role === "user" ? "/profile" : `/authors/${user.slug}`,
 						label: "Profile",
-						description: "View your public author profile",
+						description:
+							user.role === "user"
+								? "Manage your reader profile"
+								: "View your public author profile",
 						icon: UserRound,
 					},
 				]
@@ -132,6 +136,12 @@ export function MobileMenu({ user }: { user: MobileUser }) {
 						label: "Log in",
 						description: "Access your LUCID account",
 						icon: LogIn,
+					},
+					{
+						href: "/signup",
+						label: "Sign up",
+						description: "Create a reader account",
+						icon: UserPlus,
 					},
 				]),
 	];
@@ -238,13 +248,9 @@ export function MobileMenu({ user }: { user: MobileUser }) {
 							}}
 							className="absolute min-h-screen inset-y-0 right-0 flex w-full max-w-md flex-col overflow-hidden border-l border-border bg-background shadow-2xl"
 						>
-							<div
-								className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-accent/15 blur-3xl"
-							/>
+							<div className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-accent/15 blur-3xl" />
 
-							<div
-								className="pointer-events-none absolute -bottom-28 -left-24 size-72 rounded-full bg-accent-soft blur-3xl"
-							/>
+							<div className="pointer-events-none absolute -bottom-28 -left-24 size-72 rounded-full bg-accent-soft blur-3xl" />
 
 							<header className="relative flex items-center justify-between border-b border-border px-5 py-5">
 								<Link href="/" onClick={() => setOpen(false)}>
@@ -363,14 +369,24 @@ export function MobileMenu({ user }: { user: MobileUser }) {
 										<SignOutButton />
 									</form>
 								) : (
-									<Link
-										href="/login"
-										onClick={() => setOpen(false)}
-										className="flex min-h-14 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-sm font-semibold text-background transition hover:opacity-85"
-									>
-										<LogIn className="size-4" />
-										Log in
-									</Link>
+									<div className="grid grid-cols-2 gap-2">
+										<Link
+											href="/login"
+											onClick={() => setOpen(false)}
+											className="flex min-h-14 items-center justify-center gap-2 rounded-full border border-border bg-surface px-4 text-sm font-semibold"
+										>
+											<LogIn className="size-4" />
+											Log in
+										</Link>
+										<Link
+											href="/signup"
+											onClick={() => setOpen(false)}
+											className="flex min-h-14 items-center justify-center gap-2 rounded-full bg-foreground px-4 text-sm font-semibold text-background"
+										>
+											<UserPlus className="size-4" />
+											Sign up
+										</Link>
+									</div>
 								)}
 
 								<p className="mt-4 text-center text-xs text-muted">

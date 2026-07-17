@@ -1,6 +1,7 @@
 import { relations } from "drizzle-orm";
 import {
 	boolean,
+	index,
 	pgEnum,
 	pgTable,
 	text,
@@ -35,6 +36,7 @@ export const users = pgTable(
 		uniqueIndex("users_email_unique").on(table.email),
 		uniqueIndex("users_slug_unique").on(table.slug),
 	],
+	
 );
 
 export const categories = pgTable(
@@ -135,6 +137,23 @@ export const sessions = pgTable("sessions", {
 	expiresAt: timestamp("expires_at").notNull(),
 	createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+export const rateLimitEvents = pgTable(
+	"rate_limit_events",
+	{
+		id: uuid("id").primaryKey().defaultRandom(),
+		action: text("action").notNull(),
+		keyHash: text("key_hash").notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+	},
+	(table) => [
+		index("rate_limit_action_key_created_idx").on(
+			table.action,
+			table.keyHash,
+			table.createdAt,
+		),
+	],
+);
 
 export const postsRelations = relations(posts, ({ many, one }) => ({
 	comments: many(comments),

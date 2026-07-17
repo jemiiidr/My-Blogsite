@@ -1,86 +1,410 @@
 @import "tailwindcss";
 
+/* ================================
+   Light theme
+================================ */
+
 :root {
+	color-scheme: light;
+
+	/* Main colors */
 	--background: #f7f5f2;
 	--foreground: #18181b;
+
+	/* Surfaces */
 	--surface: #ffffff;
 	--surface-muted: #f0eeeb;
+
+	/* Supporting colors */
 	--border: #dedad5;
 	--muted: #6b6870;
+
+	/* Brand */
 	--accent: #7157f6;
 	--accent-soft: #eeeaff;
+
+	/* Status colors */
 	--success: #d0fae5;
-	--success-txt: #4bd29f;
+	--success-txt: #16785b;
+
 	--fail: #fff1f2;
 	--fail-txt: #a50036;
+
 	--hidden: #fef3c6;
-	--hidden-txt: #bb4d00;
+	--hidden-txt: #92400e;
+
+	/* Category gradients */
+	--category-violet-from: #ddd6fe;
+	--category-violet-to: #fae8ff;
+
+	--category-cyan-from: #a5f3fc;
+	--category-cyan-to: #dbeafe;
+
+	--category-rose-from: #fecdd3;
+	--category-rose-to: #ffedd5;
+
+	--category-emerald-from: #a7f3d0;
+	--category-emerald-to: #ecfccb;
+
+	--category-amber-from: #fde68a;
+	--category-amber-to: #fef9c3;
+
+
+	/* Hero background glows */
+	--hero-glow-violet: rgba(168, 137, 255, 0.26);
+	--hero-glow-cyan: rgba(80, 220, 235, 0.22);
+	--hero-glow-rose: rgba(255, 154, 190, 0.22);
+
+	/* Featured card gradient */
+	--hero-featured-from: #c4b5fd;
+	--hero-featured-via: #f5d0fe;
+	--hero-featured-to: #a5f3fc;
+
+	/* Featured card glass */
+	--hero-glass-background: rgba(255, 255, 255, 0.35);
+	--hero-glass-border: rgba(255, 255, 255, 0.4);
+
+	/* Latest card gradient */
+	--hero-latest-from: #7dd3fc;
+	--hero-latest-via: #c4b5fd;
+	--hero-latest-to: #fda4af;
 }
+
+/* ================================
+   Dark theme
+
+   next-themes adds .dark to <html>.
+   No @custom-variant is required.
+================================ */
 
 .dark {
+	color-scheme: dark;
+
+	/* Main colors */
 	--background: #111318;
 	--foreground: #f5f5f5;
+
+	/* Surfaces */
 	--surface: #191c22;
 	--surface-muted: #22262e;
+
+	/* Supporting colors */
 	--border: #303640;
 	--muted: #a2a7b0;
+
+	/* Brand */
 	--accent: #a896ff;
 	--accent-soft: #2b2548;
+
+	/* Status colors */
 	--success: #002c22;
 	--success-txt: #5ee9b5;
+
 	--fail: #380c1f;
 	--fail-txt: #ffccd3;
+
 	--hidden: #451901;
 	--hidden-txt: #fcd030;
+
+	/* Category gradients */
+	--category-violet-from: #2e1065;
+	--category-violet-to: #4a044e;
+
+	--category-cyan-from: #083344;
+	--category-cyan-to: #172554;
+
+	--category-rose-from: #4c0519;
+	--category-rose-to: #431407;
+
+	--category-emerald-from: #022c22;
+	--category-emerald-to: #1a2e05;
+
+	--category-amber-from: #451a03;
+	--category-amber-to: #422006;
+
+	/* Hero background glows */
+	--hero-glow-violet: rgba(139, 92, 246, 0.2);
+	--hero-glow-cyan: rgba(34, 211, 238, 0.16);
+	--hero-glow-rose: rgba(244, 114, 182, 0.16);
+
+	/* Featured card gradient */
+	--hero-featured-from: #4c1d95;
+	--hero-featured-via: #4a044e;
+	--hero-featured-to: #083344;
+
+	/* Featured card glass */
+	--hero-glass-background: rgba(0, 0, 0, 0.2);
+	--hero-glass-border: rgba(255, 255, 255, 0.12);
+
+	/* Latest card gradient */
+	--hero-latest-from: #0c4a6e;
+	--hero-latest-via: #4c1d95;
+	--hero-latest-to: #881337;
 }
 
+/* ================================
+   Tailwind theme utilities
+================================ */
+
 @theme inline {
+	/* Colors */
 	--color-background: var(--background);
 	--color-foreground: var(--foreground);
+
 	--color-surface: var(--surface);
 	--color-surface-muted: var(--surface-muted);
+
 	--color-border: var(--border);
 	--color-muted: var(--muted);
+
 	--color-accent: var(--accent);
 	--color-accent-soft: var(--accent-soft);
+
 	--color-success: var(--success);
 	--color-success-txt: var(--success-txt);
+
 	--color-fail: var(--fail);
 	--color-fail-txt: var(--fail-txt);
+
 	--color-hidden: var(--hidden);
 	--color-hidden-txt: var(--hidden-txt);
 
+	/* Fonts */
 	--font-sans: var(--font-geist-sans);
 	--font-mono: var(--font-geist-mono);
 }
 
-* {
-	border-color: var(--border);
+/* ================================
+   Base styles
+================================ */
+
+@layer base {
+	* {
+		border-color: var(--border);
+	}
+
+	html {
+		min-height: 100%;
+		background-color: var(--background);
+		scrollbar-gutter: stable;
+	}
+
+	body {
+		min-height: 100vh;
+		margin: 0;
+		background-color: var(--background);
+		color: var(--foreground);
+		font-family: var(--font-geist-sans), sans-serif;
+		text-rendering: optimizeLegibility;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
+
+	button,
+	a,
+	input,
+	textarea,
+	select,
+	[contenteditable="true"] {
+		outline-color: var(--accent);
+	}
+
+	button,
+	input,
+	textarea,
+	select {
+		font: inherit;
+	}
+
+	button:not(:disabled),
+	[role="button"]:not([aria-disabled="true"]) {
+		cursor: pointer;
+	}
+
+	button:disabled,
+	input:disabled,
+	textarea:disabled,
+	select:disabled {
+		cursor: not-allowed;
+	}
+
+	:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 3px;
+	}
+
+	::selection {
+		background-color: color-mix(
+			in srgb,
+			var(--accent) 28%,
+			transparent
+		);
+		color: var(--foreground);
+	}
 }
 
-html {
-	background: var(--background);
-	scrollbar-gutter: stable;
+/* ================================
+   Category gradient cards
+================================ */
+
+@layer components {
+	.category-gradient-violet {
+		background-image: linear-gradient(
+			to bottom right,
+			var(--category-violet-from),
+			var(--category-violet-to)
+		);
+	}
+
+	.category-gradient-cyan {
+		background-image: linear-gradient(
+			to bottom right,
+			var(--category-cyan-from),
+			var(--category-cyan-to)
+		);
+	}
+
+	.category-gradient-rose {
+		background-image: linear-gradient(
+			to bottom right,
+			var(--category-rose-from),
+			var(--category-rose-to)
+		);
+	}
+
+	.category-gradient-emerald {
+		background-image: linear-gradient(
+			to bottom right,
+			var(--category-emerald-from),
+			var(--category-emerald-to)
+		);
+	}
+
+	.category-gradient-amber {
+		background-image: linear-gradient(
+			to bottom right,
+			var(--category-amber-from),
+			var(--category-amber-to)
+		);
+	}
 }
 
-body {
-	min-height: 100vh;
-	background: var(--background);
-	color: var(--foreground);
+/* ================================
+   Rendered rich-text content
+================================ */
+
+@layer components {
+	.prose-content {
+		color: var(--foreground);
+		line-height: 1.8;
+	}
+
+	.prose-content > * + * {
+		margin-top: 1.25rem;
+	}
+
+	.prose-content h1,
+	.prose-content h2,
+	.prose-content h3 {
+		color: var(--foreground);
+		font-weight: 700;
+		line-height: 1.2;
+		letter-spacing: -0.025em;
+	}
+
+	.prose-content h1 {
+		margin-top: 2.5rem;
+		font-size: clamp(2rem, 5vw, 3rem);
+	}
+
+	.prose-content h2 {
+		margin-top: 2.25rem;
+		font-size: clamp(1.5rem, 4vw, 2rem);
+	}
+
+	.prose-content h3 {
+		margin-top: 2rem;
+		font-size: clamp(1.25rem, 3vw, 1.5rem);
+	}
+
+	.prose-content p {
+		color: var(--foreground);
+	}
+
+	.prose-content a {
+		color: var(--accent);
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 3px;
+	}
+
+	.prose-content a:hover {
+		opacity: 0.8;
+	}
+
+	.prose-content strong {
+		color: var(--foreground);
+		font-weight: 700;
+	}
+
+	.prose-content blockquote {
+		border-left: 4px solid var(--accent);
+		background-color: var(--surface-muted);
+		padding: 1rem 1.25rem;
+		color: var(--muted);
+		font-style: italic;
+	}
+
+	.prose-content ul {
+		list-style-type: disc;
+		padding-left: 1.5rem;
+	}
+
+	.prose-content ol {
+		list-style-type: decimal;
+		padding-left: 1.5rem;
+	}
+
+	.prose-content li + li {
+		margin-top: 0.5rem;
+	}
+
+	.prose-content hr {
+		margin-block: 2rem;
+		border-color: var(--border);
+	}
+
+	.prose-content code {
+		border-radius: 0.375rem;
+		background-color: var(--surface-muted);
+		padding: 0.15rem 0.35rem;
+		font-family: var(--font-geist-mono), monospace;
+		font-size: 0.9em;
+	}
+
+	.prose-content pre {
+		overflow-x: auto;
+		border: 1px solid var(--border);
+		border-radius: 0.75rem;
+		background-color: var(--surface-muted);
+		padding: 1rem;
+	}
+
+	.prose-content pre code {
+		background: transparent;
+		padding: 0;
+	}
+
+	.prose-content img {
+		height: auto;
+		max-width: 100%;
+		border-radius: 1rem;
+	}
 }
 
-button,
-a,
-input,
-textarea,
-select,
-[contenteditable="true"] {
-	outline-color: var(--accent);
-}
-
-::selection {
-	background: color-mix(in srgb, var(--accent) 28%, transparent);
-}
+/* ================================
+   Lenis smooth scrolling
+================================ */
 
 html.lenis,
 html.lenis body {
@@ -91,11 +415,21 @@ html.lenis body {
 	scroll-behavior: auto;
 }
 
+.lenis.lenis-smooth [data-lenis-prevent] {
+	overscroll-behavior: contain;
+}
+
 .lenis.lenis-stopped {
 	overflow: hidden;
 }
 
-/* Circular light/dark mode reveal */
+.lenis.lenis-smooth iframe {
+	pointer-events: none;
+}
+
+/* ================================
+   Circular theme reveal
+================================ */
 
 ::view-transition-old(root),
 ::view-transition-new(root) {
@@ -111,7 +445,24 @@ html.lenis body {
 	z-index: 9999;
 }
 
+/* ================================
+   Reduced motion
+================================ */
+
 @media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
+
+	*,
+	*::before,
+	*::after {
+		scroll-behavior: auto;
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+
 	::view-transition-old(root),
 	::view-transition-new(root) {
 		animation: none;

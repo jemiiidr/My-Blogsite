@@ -13,7 +13,7 @@ import { Avatar } from "@/components/ui/avatar";
 type NavbarProfileMenuProps = {
 	user: {
 		name: string;
-        slug: string;
+		slug: string;
 		role: "admin" | "author" | "user";
 		avatarUrl: string | null;
 	};
@@ -47,6 +47,8 @@ export function NavbarProfileMenu({ user }: NavbarProfileMenuProps) {
 
 	const isAdmin = user.role === "admin";
 	const isAuthor = user.role === "author";
+	const profileHref =
+		isAdmin || isAuthor ? `/authors/${user.slug}` : "/profile";
 
 	useEffect(() => {
 		setOpen(false);
@@ -149,22 +151,19 @@ export function NavbarProfileMenu({ user }: NavbarProfileMenuProps) {
 						</div>
 
 						<nav aria-label="Account navigation" className="mt-2 space-y-1">
-                            {isAdmin || isAuthor ? (
-                                <Link
-                                    href={`/authors/${user.slug}`}
-                                    role="menuitem"
-                                    onClick={() => setOpen(false)}
-                                    className="flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium transition hover:bg-surface-muted"
-                                >
-                                    <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-accent-soft text-accent">
-                                        <UserRound className="size-4" />
-                                    </span>
+							<Link
+								href={profileHref}
+								role="menuitem"
+								onClick={() => setOpen(false)}
+								className="flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium transition hover:bg-surface-muted"
+							>
+								<span className="grid size-9 shrink-0 place-items-center rounded-xl bg-accent-soft text-accent">
+									<UserRound className="size-4" />
+								</span>
+								Profile
+							</Link>
 
-                                    Profile
-                                </Link>
-							) : null}
-
-							{isAdmin ? (
+							{isAdmin || isAuthor ? (
 								<Link
 									href="/dashboard"
 									role="menuitem"

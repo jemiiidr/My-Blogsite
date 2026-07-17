@@ -17,6 +17,13 @@ export type PublishedPostCard = Awaited<
 	ReturnType<typeof getPublishedPosts>
 >[number];
 
+type PublishedPostOptions = {
+	search?: string;
+	category?: string;
+	tag?: string;
+	limit?: number;
+};
+
 export async function getPostEngagement(postId: string) {
 	const [[likeCount], [viewCount], [shareCount]] = await Promise.all([
 		db.select({ value: count() }).from(likes).where(eq(likes.postId, postId)),
@@ -42,13 +49,8 @@ export async function getCommentCount(postId: string) {
 	return row?.value ?? 0;
 }
 
-export async function getPublishedPosts(options?: {
-	search?: string;
-	category?: string;
-	tag?: string;
-	limit?: number;
-}) {
-	const rows = await db
+async function getPublishedPostRows() {
+	return db
 		.select({
 			id: posts.id,
 			title: posts.title,
@@ -75,12 +77,17 @@ export async function getPublishedPosts(options?: {
 		.leftJoin(categories, eq(posts.categoryId, categories.id))
 		.where(eq(posts.status, "published"))
 		.orderBy(desc(posts.publishedAt), desc(posts.createdAt));
+}
 
+function filterPublishedRows(
+	rows: Awaited<ReturnType<typeof getPublishedPostRows>>,
+	options?: PublishedPostOptions,
+) {
 	const search = options?.search?.toLowerCase().trim();
 	const category = options?.category?.toLowerCase().trim();
 	const tag = options?.tag?.toLowerCase().trim();
 
-	let filtered = rows.filter((row) => {
+	return rows.filter((row) => {
 		const matchesSearch = search
 			? `${row.title} ${row.excerpt} ${row.author.name}`
 					.toLowerCase()
@@ -94,15 +101,41 @@ export async function getPublishedPosts(options?: {
 			: true;
 		return matchesSearch && matchesCategory && matchesTag;
 	});
+}
 
-	if (options?.limit) filtered = filtered.slice(0, options.limit);
-
+async function addEngagement(
+	rows: Awaited<ReturnType<typeof getPublishedPostRows>>,
+) {
 	return Promise.all(
-		filtered.map(async (row) => ({
+		rows.map(async (row) => ({
 			...row,
 			engagement: await getPostEngagement(row.id),
 		})),
 	);
+}
+
+export async function getPublishedPosts(options?: PublishedPostOptions) {
+	const rows = filterPublishedRows(await getPublishedPostRows(), options);
+	const limitedRows = options?.limit ? rows.slice(0, options.limit) : rows;
+	return addEngagement(limitedRows);
+}
+
+export async function getPaginatedPublishedPosts(
+	options: PublishedPostOptions & { page: number; pageSize: number },
+) {
+	const rows = filterPublishedRows(await getPublishedPostRows(), options);
+	const total = rows.length;
+	const totalPages = Math.max(1, Math.ceil(total / options.pageSize));
+	const currentPage = Math.min(Math.max(options.page, 1), totalPages);
+	const start = (currentPage - 1) * options.pageSize;
+	const paginatedRows = rows.slice(start, start + options.pageSize);
+
+	return {
+		posts: await addEngagement(paginatedRows),
+		total,
+		totalPages,
+		currentPage,
+	};
 }
 
 export async function getPostBySlug(slug: string) {

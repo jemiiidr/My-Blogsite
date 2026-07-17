@@ -5,6 +5,7 @@ import { PostCardSkeleton } from "@/components/blog/post-card-skeleton";
 import { PostGrid } from "@/components/blog/post-grid";
 import { SearchIcon } from "@/components/ui/icons";
 import { getCategories } from "@/lib/db/queries/categories";
+import { parsePage } from "@/lib/utils/pagination";
 
 export const metadata: Metadata = { title: "Stories" };
 
@@ -17,6 +18,7 @@ type SearchParams = Promise<{
 	search?: string;
 	category?: string;
 	tag?: string;
+	page?: string | string[];
 }>;
 
 async function BlogResults({ searchParams }: { searchParams: SearchParams }) {
@@ -26,6 +28,8 @@ async function BlogResults({ searchParams }: { searchParams: SearchParams }) {
 			search={params.search}
 			category={params.category}
 			tag={params.tag}
+			page={parsePage(params.page)}
+			groupByCategory
 		/>
 	);
 }
@@ -59,7 +63,7 @@ async function Filters({ searchParams }: { searchParams: SearchParams }) {
 				))}
 			</select>
 			<button
-				type="button"
+				type="submit"
 				className="h-12 rounded-xl bg-foreground px-6 text-sm font-semibold text-background"
 			>
 				Apply filters
@@ -71,12 +75,11 @@ async function Filters({ searchParams }: { searchParams: SearchParams }) {
 	);
 }
 
-export default async function BlogPage({
+export default function BlogPage({
 	searchParams,
 }: {
 	searchParams: SearchParams;
 }) {
-	await Promise.resolve();
 	return (
 		<div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
 			<div className="max-w-3xl">
@@ -100,7 +103,7 @@ export default async function BlogPage({
 					<Filters searchParams={searchParams} />
 				</Suspense>
 			</div>
-			<div className="mt-8">
+			<div className="mt-10">
 				<Suspense
 					fallback={
 						<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

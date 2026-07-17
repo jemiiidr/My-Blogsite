@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { formatDate } from "@/lib/utils/format-date";
 
 export function RecentComments({
@@ -13,7 +15,15 @@ export function RecentComments({
 }) {
 	return (
 		<div className="rounded-3xl border bg-surface p-5 shadow-sm">
-			<h2 className="font-semibold">Recent comments</h2>
+			<div className="flex items-center justify-between gap-3">
+				<h2 className="font-semibold">Recent comments</h2>
+				<Link
+					href="/dashboard/comments"
+					className="text-sm font-semibold text-accent"
+				>
+					View all
+				</Link>
+			</div>
 			<div className="mt-4 space-y-3">
 				{comments.length ? (
 					comments.map((comment) => (

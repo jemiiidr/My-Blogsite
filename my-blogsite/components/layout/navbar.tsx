@@ -9,7 +9,6 @@ import { getCurrentUser } from "@/lib/auth/dal";
 
 export async function Navbar() {
 	const user = await getCurrentUser();
-
 	const canWrite = user?.role === "admin" || user?.role === "author";
 
 	return (
@@ -24,15 +23,12 @@ export async function Navbar() {
 					<Link href="/" className="transition hover:text-accent">
 						Home
 					</Link>
-
 					<Link href="/blog" className="transition hover:text-accent">
 						Blog
 					</Link>
-
 					<Link href="/authors" className="transition hover:text-accent">
 						Authors
 					</Link>
-
 				</nav>
 
 				<div className="flex items-center gap-2">
@@ -60,12 +56,20 @@ export async function Navbar() {
 							/>
 						</div>
 					) : (
-						<Link
-							href="/login"
-							className="hidden rounded-full border border-border bg-surface px-4 py-2 text-sm font-semibold transition hover:border-accent hover:text-accent md:block"
-						>
-							Log in
-						</Link>
+						<div className="hidden items-center gap-2 md:flex">
+							<Link
+								href="/login"
+								className="rounded-full border border-border bg-surface px-4 py-2 text-sm font-semibold transition hover:border-accent hover:text-accent"
+							>
+								Log in
+							</Link>
+							<Link
+								href="/signup"
+								className="rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background transition hover:opacity-85"
+							>
+								Sign up
+							</Link>
+						</div>
 					)}
 
 					<MobileMenu

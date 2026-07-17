@@ -3,6 +3,15 @@ import { z } from "zod";
 const MAX_BODY_TEXT_LENGTH = 50_000;
 const MAX_TAGS = 8;
 const MAX_TAG_LENGTH = 30;
+export const MAX_COVER_IMAGE_BYTES = 4 * 1024 * 1024;
+
+const allowedCoverImageTypes = new Set([
+	"image/jpeg",
+	"image/png",
+	"image/webp",
+	"image/gif",
+	"image/avif",
+]);
 
 function extractReadableText(html: string) {
 	return html
@@ -19,25 +28,6 @@ function extractReadableText(html: string) {
 		.trim();
 }
 
-function isValidCoverImage(value: string) {
-	if (/^\/images\/[^\s]+$/i.test(value)) {
-		return true;
-	}
-
-	try {
-		const url = new URL(value);
-
-		return (
-			url.protocol === "https:" &&
-			Boolean(url.hostname) &&
-			!url.username &&
-			!url.password
-		);
-	} catch {
-		return false;
-	}
-}
-
 function parseTags(value: string) {
 	return value
 		.split(",")
@@ -50,15 +40,6 @@ const titleSchema = z
 	.trim()
 	.min(5, "Title must be at least 5 characters.")
 	.max(140, "Title must not exceed 140 characters.");
-
-const slugSchema = z
-	.string()
-	.trim()
-	.max(100, "Slug must not exceed 100 characters.")
-	.refine(
-		(value) => value === "" || /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value),
-		"Slug can only contain lowercase letters, numbers, and hyphens.",
-	);
 
 const excerptSchema = z
 	.string()
@@ -79,15 +60,6 @@ const richTextBodySchema = z
 		`Article body must not exceed ${MAX_BODY_TEXT_LENGTH.toLocaleString()} readable characters.`,
 	);
 
-const imagePathSchema = z
-	.string()
-	.trim()
-	.min(1, "A cover image is required.")
-	.refine(
-		isValidCoverImage,
-		"Use a local /images path or a complete HTTPS image URL.",
-	);
-
 const categorySchema = z.string().trim().uuid("Select a valid category.");
 
 const tagsSchema = z
@@ -105,42 +77,31 @@ const tagsSchema = z
 
 const postFields = {
 	title: titleSchema,
-	slug: slugSchema,
 	excerpt: excerptSchema,
 	body: richTextBodySchema,
-	coverImageUrl: imagePathSchema,
 	categoryId: categorySchema,
 	tags: tagsSchema,
 	intent: z.enum(["draft", "published"]),
-	publishPassword: z.string().default(""),
 };
 
-function validatePublishingIntent(
-	data: {
-		intent: "draft" | "published";
-		publishPassword: string;
-	},
-	context: z.RefinementCtx,
-) {
-	if (data.intent === "published" && data.publishPassword.trim().length === 0) {
-		context.addIssue({
-			code: "custom",
-			path: ["publishPassword"],
-			message: "Publishing key is required to publish a story.",
-		});
-	}
-}
+export const postSchema = z.object(postFields);
 
-export const postSchema = z
-	.object(postFields)
-	.superRefine(validatePublishingIntent);
+export const updatePostSchema = z.object({
+	...postFields,
+	postId: z.string().uuid("The selected post is invalid."),
+});
 
-export const updatePostSchema = z
-	.object({
-		...postFields,
-		postId: z.string().uuid("The selected post is invalid."),
-	})
-	.superRefine(validatePublishingIntent);
+export const coverImageFileSchema = z
+	.instanceof(File, { message: "Choose a cover image." })
+	.refine((file) => file.size > 0, "Choose a cover image.")
+	.refine(
+		(file) => file.size <= MAX_COVER_IMAGE_BYTES,
+		"Cover image must not exceed 4 MB.",
+	)
+	.refine(
+		(file) => allowedCoverImageTypes.has(file.type),
+		"Use a JPG, PNG, WebP, GIF, or AVIF image.",
+	);
 
 export type PostInput = z.infer<typeof postSchema>;
 export type UpdatePostInput = z.infer<typeof updatePostSchema>;
