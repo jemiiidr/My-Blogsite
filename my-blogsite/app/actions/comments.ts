@@ -36,7 +36,6 @@ export async function addComment(
 		return {
 			success: false,
 			fieldErrors: parsed.error.flatten().fieldErrors,
-			message: "Please correct the highlighted fields.",
 		};
 	}
 
