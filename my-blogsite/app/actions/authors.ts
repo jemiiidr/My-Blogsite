@@ -2,7 +2,6 @@
 
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
 
 import { requireAdmin } from "@/lib/auth/permissions";
 import { db } from "@/lib/db";
@@ -12,18 +11,7 @@ import {
 	promoteUserToAuthorSchema,
 } from "@/lib/validations/author";
 
-export type AuthorActionState = {
-	success: boolean;
-	message?: string;
-	fieldErrors?: {
-		userId?: string[];
-	};
-};
-
-export async function promoteUserToAuthor(
-	_previousState: AuthorActionState,
-	formData: FormData,
-): Promise<AuthorActionState> {
+export async function promoteUserToAuthor(formData: FormData): Promise<void> {
 	await requireAdmin();
 
 	const parsed = promoteUserToAuthorSchema.safeParse({
@@ -31,11 +19,7 @@ export async function promoteUserToAuthor(
 	});
 
 	if (!parsed.success) {
-		return {
-			success: false,
-			fieldErrors: z.flattenError(parsed.error).fieldErrors,
-			message: "Select a user to promote.",
-		};
+		throw new Error("Select a valid user to promote.");
 	}
 
 	const [promotedUser] = await db
@@ -57,23 +41,14 @@ export async function promoteUserToAuthor(
 		});
 
 	if (!promotedUser) {
-		return {
-			success: false,
-			fieldErrors: {
-				userId: ["This user is unavailable or is already an author."],
-			},
-			message: "The user could not be promoted.",
-		};
+		throw new Error(
+			"This user is unavailable, inactive, or already has author access.",
+		);
 	}
 
 	revalidatePath("/dashboard/authors");
 	revalidatePath("/authors");
 	revalidatePath("/dashboard", "layout");
-
-	return {
-		success: true,
-		message: `${promotedUser.name} is now an author.`,
-	};
 }
 
 export async function toggleAuthorStatus(formData: FormData): Promise<void> {
@@ -85,10 +60,10 @@ export async function toggleAuthorStatus(formData: FormData): Promise<void> {
 	});
 
 	if (!parsed.success) {
-		return;
+		throw new Error("Invalid author status request.");
 	}
 
-	const [targetUser] = await db
+	const [targetAuthor] = await db
 		.select({
 			id: users.id,
 			role: users.role,
@@ -99,13 +74,17 @@ export async function toggleAuthorStatus(formData: FormData): Promise<void> {
 		.where(eq(users.id, parsed.data.userId))
 		.limit(1);
 
-	if (targetUser?.role !== "author") {
-		return;
+	if (!targetAuthor) {
+		throw new Error("Author account not found.");
+	}
+
+	if (targetAuthor.role !== "author") {
+		throw new Error("Only author accounts can be enabled or disabled.");
 	}
 
 	const nextStatus = parsed.data.isActive === "true";
 
-	if (targetUser.isActive === nextStatus) {
+	if (targetAuthor.isActive === nextStatus) {
 		return;
 	}
 
@@ -115,10 +94,10 @@ export async function toggleAuthorStatus(formData: FormData): Promise<void> {
 			isActive: nextStatus,
 			updatedAt: new Date(),
 		})
-		.where(eq(users.id, targetUser.id));
+		.where(and(eq(users.id, targetAuthor.id), eq(users.role, "author")));
 
 	revalidatePath("/dashboard/authors");
 	revalidatePath("/authors");
-	revalidatePath(`/authors/${targetUser.slug}`);
+	revalidatePath(`/authors/${targetAuthor.slug}`);
 	revalidatePath("/dashboard", "layout");
 }

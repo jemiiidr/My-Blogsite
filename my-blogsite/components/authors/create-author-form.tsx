@@ -1,97 +1,62 @@
-"use client";
-
-import { useActionState } from "react";
-
-import { type AuthorActionState, createAuthor } from "@/app/actions/authors";
-import { FieldError } from "@/components/ui/field-error";
+import { promoteUserToAuthor } from "@/app/actions/authors";
 import { FormSubmitButton } from "@/components/ui/form-submit-button";
 
-export const initialAuthorState: AuthorActionState = { success: false };
+type PromotableUser = {
+	id: string;
+	name: string;
+	email: string;
+};
 
-export function CreateAuthorForm() {
-	const [state, formAction] = useActionState(createAuthor, initialAuthorState);
+type CreateAuthorFormProps = {
+	users: PromotableUser[];
+};
+
+export function CreateAuthorForm({ users }: CreateAuthorFormProps) {
 	return (
-		<form
-			action={formAction}
-			className="rounded-3xl border bg-surface p-5 shadow-sm"
-		>
-			<h2 className="text-lg font-semibold">Add an author</h2>
+		<section className="rounded-3xl border bg-surface p-5 shadow-sm">
+			<h2 className="text-lg font-semibold">Promote a user</h2>
+
 			<p className="mt-1 text-sm text-muted">
-				Create a secure account that can write and view analytics.
+				Select an existing registered user and grant them author access.
 			</p>
-			<div className="mt-5 grid gap-4 sm:grid-cols-2">
-				<div>
-					<label htmlFor="name" className="mb-2 block text-sm font-medium">
-						Full name
-					</label>
-					<input
-						id="name"
-						name="name"
-						className="w-full rounded-xl border bg-background px-4 py-3"
-					/>
-					<FieldError errors={state.fieldErrors?.name} />
-				</div>
-				<div>
-					<label htmlFor="email" className="mb-2 block text-sm font-medium">
-						Email
-					</label>
-					<input
-						id="email"
-						name="email"
-						type="email"
-						className="w-full rounded-xl border bg-background px-4 py-3"
-					/>
-					<FieldError errors={state.fieldErrors?.email} />
-				</div>
-				<div>
-					<label htmlFor="password" className="mb-2 block text-sm font-medium">
-						Temporary password
-					</label>
-					<input
-						id="password"
-						name="password"
-						type="password"
-						className="w-full rounded-xl border bg-background px-4 py-3"
-					/>
-					<FieldError errors={state.fieldErrors?.password} />
-				</div>
-				<div>
-					<label htmlFor="avatarUrl" className="mb-2 block text-sm font-medium">
-						Profile picture URL
-					</label>
-					<input
-						id="avatarUrl"
-						name="avatarUrl"
-						placeholder="/images/avatars/..."
-						className="w-full rounded-xl border bg-background px-4 py-3"
-					/>
-					<FieldError errors={state.fieldErrors?.avatarUrl} />
-				</div>
-			</div>
-			<div className="mt-4">
-				<label htmlFor="bio" className="mb-2 block text-sm font-medium">
-					Bio
-				</label>
-				<textarea
-					id="bio"
-					name="bio"
-					rows={4}
-					className="w-full resize-none rounded-xl border bg-background px-4 py-3"
-				/>
-				<FieldError errors={state.fieldErrors?.bio} />
-			</div>
-			{state.message ? (
-				<p
-					className={`mt-4 rounded-xl p-3 text-sm ${state.success ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200" : "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-200"}`}
-				>
-					{state.message}
+
+			{users.length > 0 ? (
+				<form action={promoteUserToAuthor} className="mt-5">
+					<div>
+						<label htmlFor="userId" className="mb-2 block text-sm font-medium">
+							Registered user
+						</label>
+
+						<select
+							id="userId"
+							name="userId"
+							defaultValue=""
+							required
+							className="w-full rounded-xl border bg-background px-4 py-3 text-foreground"
+						>
+							<option value="" disabled>
+								Select a user
+							</option>
+
+							{users.map((user) => (
+								<option key={user.id} value={user.id}>
+									{user.name} ({user.email})
+								</option>
+							))}
+						</select>
+					</div>
+
+					<div className="mt-5">
+						<FormSubmitButton pendingLabel="Making author...">
+							Make author
+						</FormSubmitButton>
+					</div>
+				</form>
+			) : (
+				<p className="mt-5 rounded-xl bg-surface-muted p-4 text-sm text-muted">
+					There are no active registered users available to promote.
 				</p>
-			) : null}
-			<div className="mt-5">
-				<FormSubmitButton pendingLabel="Creating author...">
-					Create author
-				</FormSubmitButton>
-			</div>
-		</form>
+			)}
+		</section>
 	);
 }
