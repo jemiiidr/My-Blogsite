@@ -36,7 +36,6 @@ export const users = pgTable(
 		uniqueIndex("users_email_unique").on(table.email),
 		uniqueIndex("users_slug_unique").on(table.slug),
 	],
-	
 );
 
 export const categories = pgTable(

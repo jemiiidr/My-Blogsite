@@ -19,47 +19,26 @@ export type ProfileState = {
 
 const MAX_AVATAR_SIZE = 2 * 1024 * 1024;
 
-const ALLOWED_AVATAR_TYPES = new Set([
-	"image/jpeg",
-	"image/png",
-	"image/webp",
-]);
+const ALLOWED_AVATAR_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 function getAvatarExtension(file: File): string {
-	const fileExtension = file.name
-		.split(".")
-		.pop()
-		?.toLowerCase();
+	const fileExtension = file.name.split(".").pop()?.toLowerCase();
 
-	if (
-		fileExtension &&
-		/^[a-z0-9]{2,5}$/.test(fileExtension)
-	) {
-		return fileExtension === "jpeg"
-			? "jpg"
-			: fileExtension;
+	if (fileExtension && /^[a-z0-9]{2,5}$/.test(fileExtension)) {
+		return fileExtension === "jpeg" ? "jpg" : fileExtension;
 	}
 
-	const mimeExtension = file.type
-		.split("/")[1]
-		?.replace("jpeg", "jpg");
+	const mimeExtension = file.type.split("/")[1]?.replace("jpeg", "jpg");
 
-	if (
-		mimeExtension &&
-		/^[a-z0-9]{2,5}$/.test(mimeExtension)
-	) {
+	if (mimeExtension && /^[a-z0-9]{2,5}$/.test(mimeExtension)) {
 		return mimeExtension;
 	}
 
 	return "jpg";
 }
 
-async function uploadAvatar(
-	file: File,
-	userId: string,
-): Promise<string> {
-	const isDevelopment =
-		process.env.NODE_ENV === "development";
+async function uploadAvatar(file: File, userId: string): Promise<string> {
+	const isDevelopment = process.env.NODE_ENV === "development";
 
 	const developmentToken = isDevelopment
 		? process.env.BLOB_READ_WRITE_TOKEN
@@ -73,26 +52,20 @@ async function uploadAvatar(
 
 	const extension = getAvatarExtension(file);
 
-	const blob = await put(
-		`avatars/${userId}.${extension}`,
-		file,
-		{
-			access: "public",
-			addRandomSuffix: true,
-			...(developmentToken
-				? {
-						token: developmentToken,
-					}
-				: {}),
-		},
-	);
+	const blob = await put(`avatars/${userId}.${extension}`, file, {
+		access: "public",
+		addRandomSuffix: true,
+		...(developmentToken
+			? {
+					token: developmentToken,
+				}
+			: {}),
+	});
 
 	return blob.url;
 }
 
-function isVercelBlobUrl(
-	value: string | null | undefined,
-): value is string {
+function isVercelBlobUrl(value: string | null | undefined): value is string {
 	if (!value) {
 		return false;
 	}
@@ -102,25 +75,20 @@ function isVercelBlobUrl(
 
 		return (
 			url.protocol === "https:" &&
-			url.hostname.endsWith(
-				".blob.vercel-storage.com",
-			)
+			url.hostname.endsWith(".blob.vercel-storage.com")
 		);
 	} catch {
 		return false;
 	}
 }
 
-async function deleteAvatarQuietly(
-	url: string | null | undefined,
-) {
+async function deleteAvatarQuietly(url: string | null | undefined) {
 	if (!isVercelBlobUrl(url)) {
 		return;
 	}
 
 	try {
-		const isDevelopment =
-			process.env.NODE_ENV === "development";
+		const isDevelopment = process.env.NODE_ENV === "development";
 
 		const developmentToken = isDevelopment
 			? process.env.BLOB_READ_WRITE_TOKEN
@@ -135,10 +103,7 @@ async function deleteAvatarQuietly(
 				: undefined,
 		);
 	} catch (error) {
-		console.error(
-			"Avatar cleanup failed:",
-			error,
-		);
+		console.error("Avatar cleanup failed:", error);
 	}
 }
 
@@ -156,34 +121,24 @@ export async function updateProfile(
 	if (!parsed.success) {
 		return {
 			success: false,
-			fieldErrors:
-				parsed.error.flatten().fieldErrors,
-			message:
-				"Please correct your profile details.",
+			fieldErrors: parsed.error.flatten().fieldErrors,
+			message: "Please correct your profile details.",
 		};
 	}
 
 	const avatarValue = formData.get("avatar");
 
 	const avatar =
-		avatarValue instanceof File &&
-		avatarValue.size > 0
-			? avatarValue
-			: null;
+		avatarValue instanceof File && avatarValue.size > 0 ? avatarValue : null;
 
 	if (avatar) {
-		if (
-			!ALLOWED_AVATAR_TYPES.has(avatar.type)
-		) {
+		if (!ALLOWED_AVATAR_TYPES.has(avatar.type)) {
 			return {
 				success: false,
 				fieldErrors: {
-					avatar: [
-						"Only JPG, PNG, and WebP images are allowed.",
-					],
+					avatar: ["Only JPG, PNG, and WebP images are allowed."],
 				},
-				message:
-					"Please select a valid profile picture.",
+				message: "Please select a valid profile picture.",
 			};
 		}
 
@@ -191,12 +146,9 @@ export async function updateProfile(
 			return {
 				success: false,
 				fieldErrors: {
-					avatar: [
-						"Profile pictures must be 2 MB or smaller.",
-					],
+					avatar: ["Profile pictures must be 2 MB or smaller."],
 				},
-				message:
-					"The selected profile picture is too large.",
+				message: "The selected profile picture is too large.",
 			};
 		}
 	}
@@ -211,8 +163,7 @@ export async function updateProfile(
 	if (!rateLimit.allowed) {
 		return {
 			success: false,
-			message:
-				"Too many profile updates. Please try again later.",
+			message: "Too many profile updates. Please try again later.",
 		};
 	}
 
@@ -227,28 +178,19 @@ export async function updateProfile(
 	if (!currentProfile) {
 		return {
 			success: false,
-			message:
-				"Your profile could not be found.",
+			message: "Your profile could not be found.",
 		};
 	}
 
-	const previousAvatarUrl =
-		currentProfile.avatarUrl;
+	const previousAvatarUrl = currentProfile.avatarUrl;
 
 	let uploadedAvatarUrl: string | null = null;
 
 	if (avatar) {
 		try {
-			uploadedAvatarUrl =
-				await uploadAvatar(
-					avatar,
-					user.id,
-				);
+			uploadedAvatarUrl = await uploadAvatar(avatar, user.id);
 		} catch (error) {
-			console.error(
-				"Profile picture upload failed:",
-				error,
-			);
+			console.error("Profile picture upload failed:", error);
 
 			return {
 				success: false,
@@ -257,8 +199,7 @@ export async function updateProfile(
 						"The profile picture could not be uploaded. Check your Blob configuration and try again.",
 					],
 				},
-				message:
-					"Unable to upload the profile picture.",
+				message: "Unable to upload the profile picture.",
 			};
 		}
 	}
@@ -271,31 +212,24 @@ export async function updateProfile(
 				bio: parsed.data.bio,
 				...(uploadedAvatarUrl
 					? {
-							avatarUrl:
-								uploadedAvatarUrl,
+							avatarUrl: uploadedAvatarUrl,
 						}
 					: {}),
 				updatedAt: new Date(),
 			})
 			.where(eq(users.id, user.id));
 	} catch (error) {
-		console.error(
-			"Profile database update failed:",
-			error,
-		);
+		console.error("Profile database update failed:", error);
 
 		/*
 		 * The new image was uploaded, but the database
 		 * update failed, so remove the unused Blob.
 		 */
-		await deleteAvatarQuietly(
-			uploadedAvatarUrl,
-		);
+		await deleteAvatarQuietly(uploadedAvatarUrl);
 
 		return {
 			success: false,
-			message:
-				"Failed to save your profile changes.",
+			message: "Failed to save your profile changes.",
 		};
 	}
 
@@ -308,13 +242,8 @@ export async function updateProfile(
 	 *
 	 * are ignored because they are not Blob URLs.
 	 */
-	if (
-		uploadedAvatarUrl &&
-		previousAvatarUrl !== uploadedAvatarUrl
-	) {
-		await deleteAvatarQuietly(
-			previousAvatarUrl,
-		);
+	if (uploadedAvatarUrl && previousAvatarUrl !== uploadedAvatarUrl) {
+		await deleteAvatarQuietly(previousAvatarUrl);
 	}
 
 	revalidatePath("/profile");
@@ -325,9 +254,6 @@ export async function updateProfile(
 	return {
 		success: true,
 		message: "Profile updated.",
-		avatarUrl:
-			uploadedAvatarUrl ??
-			previousAvatarUrl ??
-			undefined,
+		avatarUrl: uploadedAvatarUrl ?? previousAvatarUrl ?? undefined,
 	};
 }

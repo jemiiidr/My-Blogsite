@@ -6,15 +6,13 @@ import {
 	type FormEvent,
 	startTransition,
 	useActionState,
+	useCallback,
 	useEffect,
 	useRef,
 	useState,
 } from "react";
 
-import {
-	type ProfileState,
-	updateProfile,
-} from "@/app/actions/profile";
+import { type ProfileState, updateProfile } from "@/app/actions/profile";
 import { FieldError } from "@/components/ui/field-error";
 
 type ProfileFormProps = {
@@ -38,13 +36,11 @@ export function ProfileForm({ user }: ProfileFormProps) {
 	const [name, setName] = useState(user.name);
 	const [bio, setBio] = useState(user.bio);
 
-	const [currentAvatarUrl, setCurrentAvatarUrl] = useState<
-		string | null
-	>(user.avatarUrl);
+	const [currentAvatarUrl, setCurrentAvatarUrl] = useState<string | null>(
+		user.avatarUrl,
+	);
 
-	const [avatarPreview, setAvatarPreview] = useState<
-		string | null
-	>(null);
+	const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
 	const [selectedFileName, setSelectedFileName] = useState("");
 	const [removeAvatar, setRemoveAvatar] = useState(false);
@@ -54,19 +50,18 @@ export function ProfileForm({ user }: ProfileFormProps) {
 
 	const displayedAvatar = removeAvatar
 		? null
-		: avatarPreview ?? currentAvatarUrl;
+		: (avatarPreview ?? currentAvatarUrl);
 
-	const userInitial =
-		name.trim().charAt(0).toUpperCase() || "U";
+	const userInitial = name.trim().charAt(0).toUpperCase() || "U";
 
-	function clearAvatarObjectUrl() {
+	const clearAvatarObjectUrl = useCallback(() => {
 		if (!avatarObjectUrlRef.current) {
 			return;
 		}
 
 		URL.revokeObjectURL(avatarObjectUrlRef.current);
 		avatarObjectUrlRef.current = null;
-	}
+	}, []);
 
 	function clearSelectedFile() {
 		clearAvatarObjectUrl();
@@ -79,9 +74,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
 		}
 	}
 
-	function handleAvatarChange(
-		event: ChangeEvent<HTMLInputElement>,
-	) {
+	function handleAvatarChange(event: ChangeEvent<HTMLInputElement>) {
 		const selectedFile = event.target.files?.[0];
 
 		clearAvatarObjectUrl();
@@ -115,9 +108,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
 		setRemoveAvatar(false);
 	}
 
-	function handleSubmit(
-		event: FormEvent<HTMLFormElement>,
-	) {
+	function handleSubmit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
 
 		const form = event.currentTarget;
@@ -150,14 +141,12 @@ export function ProfileForm({ user }: ProfileFormProps) {
 		if (fileInputRef.current) {
 			fileInputRef.current.value = "";
 		}
-	}, [state]);
+	}, [state.success, state.avatarUrl, clearAvatarObjectUrl]);
 
 	useEffect(() => {
 		return () => {
 			if (avatarObjectUrlRef.current) {
-				URL.revokeObjectURL(
-					avatarObjectUrlRef.current,
-				);
+				URL.revokeObjectURL(avatarObjectUrlRef.current);
 			}
 		};
 	}, []);
@@ -195,10 +184,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
 				</div>
 
 				<div className="min-w-0 flex-1 space-y-3">
-					<label
-						htmlFor="avatar"
-						className="block text-sm font-semibold"
-					>
+					<label htmlFor="avatar" className="block text-sm font-semibold">
 						Profile picture
 					</label>
 
@@ -231,8 +217,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
 							>
 								Undo removal
 							</button>
-						) : currentAvatarUrl &&
-						  !selectedFileName ? (
+						) : currentAvatarUrl && !selectedFileName ? (
 							<button
 								type="button"
 								onClick={handleRemoveAvatar}
@@ -251,17 +236,12 @@ export function ProfileForm({ user }: ProfileFormProps) {
 								: "JPG, PNG, or WebP. Maximum 2 MB."}
 					</p>
 
-					<FieldError
-						errors={state.fieldErrors?.avatar}
-					/>
+					<FieldError errors={state.fieldErrors?.avatar} />
 				</div>
 			</div>
 
 			<div>
-				<label
-					htmlFor="name"
-					className="mb-2 block text-sm font-semibold"
-				>
+				<label htmlFor="name" className="mb-2 block text-sm font-semibold">
 					Display name
 				</label>
 
@@ -270,9 +250,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
 					name="name"
 					type="text"
 					value={name}
-					onChange={(event) =>
-						setName(event.target.value)
-					}
+					onChange={(event) => setName(event.target.value)}
 					minLength={2}
 					maxLength={80}
 					required
@@ -283,10 +261,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
 			</div>
 
 			<div>
-				<label
-					htmlFor="bio"
-					className="mb-2 block text-sm font-semibold"
-				>
+				<label htmlFor="bio" className="mb-2 block text-sm font-semibold">
 					Bio
 				</label>
 
@@ -294,9 +269,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
 					id="bio"
 					name="bio"
 					value={bio}
-					onChange={(event) =>
-						setBio(event.target.value)
-					}
+					onChange={(event) => setBio(event.target.value)}
 					rows={6}
 					maxLength={500}
 					placeholder="Tell readers something about yourself."
@@ -328,9 +301,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
 				disabled={pending}
 				className="inline-flex items-center justify-center rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
 			>
-				{pending
-					? "Saving profile..."
-					: "Save profile"}
+				{pending ? "Saving profile..." : "Save profile"}
 			</button>
 		</form>
 	);

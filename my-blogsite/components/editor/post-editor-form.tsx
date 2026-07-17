@@ -82,74 +82,48 @@ export function PostEditorForm({
 		initialActionState,
 	);
 
-	const [title, setTitle] = useState(
-		initialPost?.title ?? "",
-	);
+	const [title, setTitle] = useState(initialPost?.title ?? "");
 
-	const [body, setBody] = useState(
-		initialPost?.body ?? "<p></p>",
-	);
+	const [body, setBody] = useState(initialPost?.body ?? "<p></p>");
 
-	const [bodyText, setBodyText] = useState(
-		stripHtml(initialPost?.body ?? ""),
-	);
+	const [bodyText, setBodyText] = useState(stripHtml(initialPost?.body ?? ""));
 
-	const [excerpt, setExcerpt] = useState(
-		initialPost?.excerpt ?? "",
-	);
+	const [excerpt, setExcerpt] = useState(initialPost?.excerpt ?? "");
 
-	const [categoryId, setCategoryId] = useState(
-		initialPost?.categoryId ?? "",
-	);
+	const [categoryId, setCategoryId] = useState(initialPost?.categoryId ?? "");
 
-	const [tags, setTags] = useState(
-		initialPost?.tags.join(", ") ?? "",
-	);
+	const [tags, setTags] = useState(initialPost?.tags.join(", ") ?? "");
 
-	const [selectedImageName, setSelectedImageName] =
-		useState("");
+	const [selectedImageName, setSelectedImageName] = useState("");
 
-	const [selectedImagePreview, setSelectedImagePreview] =
-		useState<string | null>(null);
+	const [selectedImagePreview, setSelectedImagePreview] = useState<
+		string | null
+	>(null);
 
-	const [removeCoverImage, setRemoveCoverImage] =
-		useState(false);
+	const [removeCoverImage, setRemoveCoverImage] = useState(false);
 
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const coverObjectUrlRef = useRef<string | null>(null);
 
-	const currentCoverImage =
-		initialPost?.coverImageUrl || null;
+	const currentCoverImage = initialPost?.coverImageUrl || null;
 
 	const hasSavedCover =
-		Boolean(currentCoverImage) &&
-		currentCoverImage !== fallbackCover;
+		Boolean(currentCoverImage) && currentCoverImage !== fallbackCover;
 
 	const wordCount = useMemo(() => {
-		return bodyText
-			.trim()
-			.split(/\s+/)
-			.filter(Boolean).length;
+		return bodyText.trim().split(/\s+/).filter(Boolean).length;
 	}, [bodyText]);
 
-	const readingMinutes = Math.max(
-		1,
-		Math.ceil(wordCount / 220),
-	);
+	const readingMinutes = Math.max(1, Math.ceil(wordCount / 220));
 
 	const coverPreview = removeCoverImage
 		? fallbackCover
-		: selectedImagePreview ||
-			currentCoverImage ||
-			fallbackCover;
+		: selectedImagePreview || currentCoverImage || fallbackCover;
 
 	const hasDisplayedCover =
-		!removeCoverImage &&
-		Boolean(selectedImagePreview || hasSavedCover);
+		!removeCoverImage && Boolean(selectedImagePreview || hasSavedCover);
 
-	function handleEditorChange(
-		value: RichTextEditorValue,
-	) {
+	function handleEditorChange(value: RichTextEditorValue) {
 		setBody(value.html);
 		setBodyText(value.text);
 	}
@@ -159,9 +133,7 @@ export function PostEditorForm({
 			return;
 		}
 
-		URL.revokeObjectURL(
-			coverObjectUrlRef.current,
-		);
+		URL.revokeObjectURL(coverObjectUrlRef.current);
 
 		coverObjectUrlRef.current = null;
 	}
@@ -177,9 +149,7 @@ export function PostEditorForm({
 		}
 	}
 
-	function handleImageChange(
-		event: ChangeEvent<HTMLInputElement>,
-	) {
+	function handleImageChange(event: ChangeEvent<HTMLInputElement>) {
 		const file = event.target.files?.[0];
 
 		clearCoverObjectUrl();
@@ -213,9 +183,7 @@ export function PostEditorForm({
 		setRemoveCoverImage(false);
 	}
 
-	function handleSubmit(
-		event: FormEvent<HTMLFormElement>,
-	) {
+	function handleSubmit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
 
 		const form = event.currentTarget;
@@ -226,19 +194,12 @@ export function PostEditorForm({
 
 		const formData = new FormData(form);
 
-		const nativeEvent =
-			event.nativeEvent as SubmitEvent;
+		const nativeEvent = event.nativeEvent as SubmitEvent;
 
 		const submitter = nativeEvent.submitter;
 
-		if (
-			submitter instanceof HTMLButtonElement &&
-			submitter.name
-		) {
-			formData.set(
-				submitter.name,
-				submitter.value,
-			);
+		if (submitter instanceof HTMLButtonElement && submitter.name) {
+			formData.set(submitter.name, submitter.value);
 		}
 
 		startTransition(() => {
@@ -249,9 +210,7 @@ export function PostEditorForm({
 	useEffect(() => {
 		return () => {
 			if (coverObjectUrlRef.current) {
-				URL.revokeObjectURL(
-					coverObjectUrlRef.current,
-				);
+				URL.revokeObjectURL(coverObjectUrlRef.current);
 			}
 		};
 	}, []);
@@ -261,18 +220,12 @@ export function PostEditorForm({
 			onSubmit={handleSubmit}
 			className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]"
 		>
-			<input
-				type="hidden"
-				name="body"
-				value={body}
-			/>
+			<input type="hidden" name="body" value={body} />
 
 			<input
 				type="hidden"
 				name="removeCoverImage"
-				value={
-					removeCoverImage ? "true" : "false"
-				}
+				value={removeCoverImage ? "true" : "false"}
 			/>
 
 			<motion.section
@@ -301,18 +254,14 @@ export function PostEditorForm({
 								</p>
 
 								<p className="mt-1 text-sm text-muted">
-									The URL is generated automatically from
-									the title.
+									The URL is generated automatically from the title.
 								</p>
 							</div>
 
 							<Sparkles className="size-5 text-accent" />
 						</div>
 
-						<label
-							htmlFor="title"
-							className="sr-only"
-						>
+						<label htmlFor="title" className="sr-only">
 							Story title
 						</label>
 
@@ -320,9 +269,7 @@ export function PostEditorForm({
 							id="title"
 							name="title"
 							value={title}
-							onChange={(event) =>
-								setTitle(event.target.value)
-							}
+							onChange={(event) => setTitle(event.target.value)}
 							rows={2}
 							maxLength={140}
 							required
@@ -331,19 +278,12 @@ export function PostEditorForm({
 						/>
 
 						<div className="mt-2 flex items-center justify-between text-xs text-muted">
-							<span>
-								Make it specific, clear, and
-								memorable.
-							</span>
+							<span>Make it specific, clear, and memorable.</span>
 
 							<span>{title.length}/140</span>
 						</div>
 
-						<FieldError
-							errors={
-								state.fieldErrors?.title
-							}
-						/>
+						<FieldError errors={state.fieldErrors?.title} />
 
 						<div className="mt-7">
 							<label
@@ -358,65 +298,33 @@ export function PostEditorForm({
 								id="categoryId"
 								name="categoryId"
 								value={categoryId}
-								onChange={(event) =>
-									setCategoryId(
-										event.target.value,
-									)
-								}
+								onChange={(event) => setCategoryId(event.target.value)}
 								required
 								className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-accent"
 							>
-								<option
-									value=""
-									disabled
-								>
+								<option value="" disabled>
 									Select category
 								</option>
 
-								{categories.map(
-									(category) => (
-										<option
-											key={
-												category.id
-											}
-											value={
-												category.id
-											}
-										>
-											{
-												category.name
-											}
-										</option>
-									),
-								)}
+								{categories.map((category) => (
+									<option key={category.id} value={category.id}>
+										{category.name}
+									</option>
+								))}
 							</select>
 
-							<FieldError
-								errors={
-									state.fieldErrors
-										?.categoryId
-								}
-							/>
+							<FieldError errors={state.fieldErrors?.categoryId} />
 						</div>
 					</div>
 				</div>
 
 				<div>
 					<RichTextEditor
-						initialHtml={
-							initialPost?.body ??
-							"<p></p>"
-						}
-						onChange={
-							handleEditorChange
-						}
+						initialHtml={initialPost?.body ?? "<p></p>"}
+						onChange={handleEditorChange}
 					/>
 
-					<FieldError
-						errors={
-							state.fieldErrors?.body
-						}
-					/>
+					<FieldError errors={state.fieldErrors?.body} />
 				</div>
 			</motion.section>
 
@@ -448,15 +356,9 @@ export function PostEditorForm({
 							sizes="(min-width: 1280px) 352px, 100vw"
 							className="object-cover transition duration-500 hover:scale-[1.02]"
 							unoptimized={
-								coverPreview.startsWith(
-									"blob:",
-								) ||
-								!coverPreview.startsWith(
-									"/",
-								) ||
-								coverPreview.endsWith(
-									".svg",
-								)
+								coverPreview.startsWith("blob:") ||
+								!coverPreview.startsWith("/") ||
+								coverPreview.endsWith(".svg")
 							}
 						/>
 
@@ -476,8 +378,7 @@ export function PostEditorForm({
 							</p>
 
 							<p className="mt-1 line-clamp-1 font-medium">
-								{title ||
-									"Untitled story"}
+								{title || "Untitled story"}
 							</p>
 						</div>
 					</div>
@@ -489,9 +390,7 @@ export function PostEditorForm({
 						>
 							<ImageUp className="size-3.5" />
 
-							{initialPost
-								? "Replace cover image"
-								: "Upload cover image"}
+							{initialPost ? "Replace cover image" : "Upload cover image"}
 						</label>
 
 						<input
@@ -501,9 +400,7 @@ export function PostEditorForm({
 							type="file"
 							accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
 							required={!initialPost}
-							onChange={
-								handleImageChange
-							}
+							onChange={handleImageChange}
 							className="block w-full rounded-2xl border border-border bg-background text-sm file:mr-3 file:border-0 file:border-r file:border-border file:bg-surface-muted file:px-4 file:py-3 file:text-sm file:font-semibold hover:file:bg-accent-soft"
 						/>
 
@@ -511,9 +408,7 @@ export function PostEditorForm({
 							{selectedImageName ? (
 								<button
 									type="button"
-									onClick={
-										handleClearSelectedImage
-									}
+									onClick={handleClearSelectedImage}
 									className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-2 text-xs font-semibold transition hover:border-accent hover:bg-accent-soft"
 								>
 									<X className="size-3.5" />
@@ -524,22 +419,16 @@ export function PostEditorForm({
 							{removeCoverImage ? (
 								<button
 									type="button"
-									onClick={
-										handleUndoRemoveCoverImage
-									}
+									onClick={handleUndoRemoveCoverImage}
 									className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-2 text-xs font-semibold transition hover:border-accent hover:bg-accent-soft"
 								>
 									<RotateCcw className="size-3.5" />
 									Undo removal
 								</button>
-							) : initialPost &&
-							  hasSavedCover &&
-							  !selectedImageName ? (
+							) : initialPost && hasSavedCover && !selectedImageName ? (
 								<button
 									type="button"
-									onClick={
-										handleRemoveCoverImage
-									}
+									onClick={handleRemoveCoverImage}
 									className="inline-flex items-center gap-1.5 rounded-full border border-fail px-3 py-2 text-xs font-semibold text-fail-txt transition hover:bg-fail"
 								>
 									<Trash2 className="size-3.5" />
@@ -553,20 +442,14 @@ export function PostEditorForm({
 								? "The current cover will be removed when you save this post."
 								: selectedImageName
 									? `Selected: ${selectedImageName}`
-									: initialPost &&
-										  hasSavedCover
+									: initialPost && hasSavedCover
 										? "Leave empty to keep the current cover. Maximum 4 MB."
 										: initialPost
 											? "No custom cover is currently saved. You may upload one."
 											: "A cover image is required. Maximum 4 MB."}
 						</p>
 
-						<FieldError
-							errors={
-								state.fieldErrors
-									?.coverImage
-							}
-						/>
+						<FieldError errors={state.fieldErrors?.coverImage} />
 					</div>
 				</div>
 
@@ -577,9 +460,7 @@ export function PostEditorForm({
 								Discovery
 							</p>
 
-							<h2 className="mt-1 font-semibold">
-								Story details
-							</h2>
+							<h2 className="mt-1 font-semibold">Story details</h2>
 						</div>
 
 						<Eye className="size-4.5 text-muted" />
@@ -598,12 +479,7 @@ export function PostEditorForm({
 								id="excerpt"
 								name="excerpt"
 								value={excerpt}
-								onChange={(event) =>
-									setExcerpt(
-										event.target
-											.value,
-									)
-								}
+								onChange={(event) => setExcerpt(event.target.value)}
 								rows={5}
 								maxLength={320}
 								placeholder="Write a concise preview for cards, search, and social sharing."
@@ -615,12 +491,7 @@ export function PostEditorForm({
 								/320
 							</div>
 
-							<FieldError
-								errors={
-									state.fieldErrors
-										?.excerpt
-								}
-							/>
+							<FieldError errors={state.fieldErrors?.excerpt} />
 						</div>
 
 						<div>
@@ -636,27 +507,16 @@ export function PostEditorForm({
 								id="tags"
 								name="tags"
 								value={tags}
-								onChange={(event) =>
-									setTags(
-										event.target
-											.value,
-									)
-								}
+								onChange={(event) => setTags(event.target.value)}
 								placeholder="design, culture, ideas"
 								className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-accent"
 							/>
 
 							<p className="mt-2 text-xs text-muted">
-								Separate tags using
-								commas. A maximum of eight
-								is stored.
+								Separate tags using commas. A maximum of eight is stored.
 							</p>
 
-							<FieldError
-								errors={
-									state.fieldErrors?.tags
-								}
-							/>
+							<FieldError errors={state.fieldErrors?.tags} />
 						</div>
 					</div>
 				</div>
@@ -668,14 +528,10 @@ export function PostEditorForm({
 						</div>
 
 						<div>
-							<p className="font-semibold">
-								Ready to share?
-							</p>
+							<p className="font-semibold">Ready to share?</p>
 
 							<p className="mt-1 text-xs leading-5 text-muted">
-								Review your content
-								before publishing or save
-								it as a draft.
+								Review your content before publishing or save it as a draft.
 							</p>
 						</div>
 					</div>
@@ -697,9 +553,7 @@ export function PostEditorForm({
 									<AlertCircle className="mt-0.5 size-4 shrink-0" />
 								)}
 
-								<p>
-									{state.message}
-								</p>
+								<p>{state.message}</p>
 							</div>
 						</div>
 					) : null}
@@ -712,9 +566,7 @@ export function PostEditorForm({
 							disabled={pending}
 							className="inline-flex w-full items-center justify-center rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
 						>
-							{pending
-								? "Publishing story..."
-								: "Publish story"}
+							{pending ? "Publishing story..." : "Publish story"}
 						</button>
 
 						<button
@@ -724,20 +576,14 @@ export function PostEditorForm({
 							disabled={pending}
 							className="inline-flex w-full items-center justify-center rounded-full border border-border bg-surface px-5 py-3 text-sm font-semibold text-foreground transition hover:border-accent hover:bg-accent-soft disabled:cursor-not-allowed disabled:opacity-50"
 						>
-							{pending
-								? "Saving..."
-								: "Save as draft"}
+							{pending ? "Saving..." : "Save as draft"}
 						</button>
 					</div>
 
 					<div className="mt-4 flex items-center justify-between border-t border-border pt-4 text-xs text-muted">
-						<span>
-							{wordCount} words
-						</span>
+						<span>{wordCount} words</span>
 
-						<span>
-							{readingMinutes} min read
-						</span>
+						<span>{readingMinutes} min read</span>
 					</div>
 				</div>
 			</motion.aside>

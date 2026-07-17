@@ -30,7 +30,7 @@ export async function CommentList({
 				{result.comments.map((comment) => (
 					<article
 						key={comment.id}
-						className="rounded-[1.5rem] border bg-surface p-5"
+						className="rounded-3xl border bg-surface p-5"
 					>
 						<div className="flex items-center gap-3">
 							<Avatar
