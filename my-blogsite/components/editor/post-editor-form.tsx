@@ -350,7 +350,7 @@ export function PostEditorForm({
 							alt={
 								hasDisplayedCover
 									? "Story cover preview"
-									: "Placeholder story cover"
+									: ""
 							}
 							fill
 							sizes="(min-width: 1280px) 352px, 100vw"
